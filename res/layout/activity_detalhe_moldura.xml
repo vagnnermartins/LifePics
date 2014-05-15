@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="7dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/detalhe_moldura_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/verde_lp"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        >
+
+        <ImageView
+            android:id="@+id/detalhe_moldura_polaroid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:src="@drawable/polaroid"
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:id="@+id/detalhe_moldura_imagem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true" />
+
+        <TextView
+            android:id="@+id/detalhe_moldura_ellipze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="..."
+            android:textColor="@color/verde_lp"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/detalhe_moldura_descricao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/detalhe_moldura_polaroid"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

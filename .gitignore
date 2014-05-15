@@ -1,0 +1,15 @@
+ass
+/target
+/target/*
+.classpath
+proguard-project.txt
+*.settings
+=======
+/bin
+/bin/*
+/gen
+/gen/
+*.class
+/target
+/target/*
+

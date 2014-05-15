@@ -1,0 +1,119 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="6dp"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <RelativeLayout
+            android:id="@+id/item_colecao_card_conteudo1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+             >
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_polaroid1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                android:src="@drawable/polaroid" />
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_imagem1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/no_card" />
+
+            <TextView
+                android:id="@+id/item_colecao_card_grid_titulo1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:text="Sonho" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_colecao_card_conteudo2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_polaroid2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                android:src="@drawable/polaroid" />
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_imagem2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/no_card" />
+
+            <TextView
+                android:id="@+id/item_colecao_card_grid_titulo2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:text="Sonho" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_colecao_card_conteudo3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_polaroid3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                android:src="@drawable/polaroid" />
+
+            <ImageView
+                android:id="@+id/item_colecao_card_grid_imagem3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/no_card" />
+
+            <TextView
+                android:id="@+id/item_colecao_card_grid_titulo3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:text="Sonho" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

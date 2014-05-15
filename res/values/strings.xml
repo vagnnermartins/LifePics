@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LifePics</string>
+    <string name="facebook_app_id">1440264786219962</string>
+    <string name="splashscreen_entrar_com_o_fb">Entrar com o Facebook</string>
+    <string name="splashscreen_cadastrar_mais_tarde">Cadastrar mais tarde</string>
+    <string name="menu_home_desconectar">Desconectar</string>
+
+    <!-- Inicio -->
+    <string name="atencao">Atenção</string>
+    <string name="msg_sair">Deseja realmente sair?</string>
+    <string name="sim">Sim</string>
+    <string name="msg_salvando_foto">Salvando foto#8230;</string>
+    <string name="msg_compartilhando_em_lf">Compartilhando em LifePics#8230;</string>
+    <string name="msg_compartilhando_em_fb">Compartilhando em Facebook#8230;</string>
+    <string name="msg_compartilhando_em_twitter">Compartilhando em Twitter#8230;</string>
+    <string name="msg_finalizado">Finalizado!</string>
+    
+    <!-- Detalhe moldura -->
+    <string name="menu_detalhe_moldura_excluir">Excluir</string>
+    <string name="detalhe_moldura_adicionar_foto">Adicionar foto</string>
+
+</resources>

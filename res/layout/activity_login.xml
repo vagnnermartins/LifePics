@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/balloonsx" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/verde_lp_60" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/logo"
+        android:layout_margin="7dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical"
+        android:weightSum="2" >
+
+        <LinearLayout
+            android:id="@+id/login_facebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="7dp"
+            android:background="@color/azul_fb"
+            android:gravity="center"
+            android:padding="10dp"
+            android:onClick="onClickLoginFacebook" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/facebook" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="7dp"
+                android:gravity="center"
+                android:text="@string/splashscreen_entrar_com_o_fb"
+                android:textColor="@color/branco" />
+
+            <ProgressBar
+                android:id="@+id/login_progress_facebook"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="7dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/cinza"
+            android:gravity="center"
+            android:padding="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="7dp"
+                android:gravity="center"
+                android:text="@string/splashscreen_cadastrar_mais_tarde"
+                android:textColor="@color/branco" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

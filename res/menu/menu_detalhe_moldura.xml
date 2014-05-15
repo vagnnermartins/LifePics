@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_detalhe_moldura_tirar_foto"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:orderInCategory="100"
+        android:showAsAction="withText|always"/>
+    <item
+        android:id="@+id/menu_detalhe_moldura_compartilhar"
+        android:icon="@android:drawable/ic_menu_share"
+        android:orderInCategory="100"
+        android:showAsAction="withText|always"/>
+
+    <group>
+        <item
+            android:id="@+id/menu_detalhe_moldura_excluir"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:title="@string/menu_detalhe_moldura_excluir"/>
+    </group>
+
+</menu>
