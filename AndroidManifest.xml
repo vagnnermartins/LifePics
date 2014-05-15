@@ -48,6 +48,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/LP.ActionBar" >
         </activity>
+        <activity
+            android:name="br.com.gm.lifepics.SalvarCompartilharActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LP.ActionBar" >
+        </activity>
     </application>
 
 </manifest>

@@ -24,6 +24,9 @@ public class TransferParse {
 	public void put(String key, ParseObject parseObject){
 		map.put(key, parseObject);
 	}
+	public void remove(String key){
+		map.remove(key);
+	}
 	public ParseObject get(String key){
 		return map.get(key);
 	}

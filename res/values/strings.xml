@@ -20,5 +20,9 @@
     <!-- Detalhe moldura -->
     <string name="menu_detalhe_moldura_excluir">Excluir</string>
     <string name="detalhe_moldura_adicionar_foto">Adicionar foto</string>
+    
+    <!-- Salvar Compartilhamento -->
+    <string name="salvar_compartilhamento_salvar">Salvar</string>
+    <string name="salvar_compartilhamento_compartilhar">Compartilhar</string>
 
 </resources>

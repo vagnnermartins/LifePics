@@ -2,7 +2,10 @@ package br.com.gm.lifepics;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,6 +21,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
@@ -29,6 +33,7 @@ import br.com.gm.lifepics.model.TransferParse;
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.CropImage;
 import com.componente.box.localizacao.util.DataUtil;
+import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -39,6 +44,7 @@ public class DetalheMolduraActivity extends Activity {
 	public static final String CACHE_DETALHE_FOTO = "cache_detalhe_foto";
 	private static final int RESULT_TAKE_IMAGE = 1;
 	private static final int RESULT_LOAD_IMAGE = 2;
+	private static final int REQUEST_SALVAR_COMPARTILHAR = 3;
 	
 	private static final String PATH_TAKE_PICTURE = "path_take_picture";
 	
@@ -61,9 +67,20 @@ public class DetalheMolduraActivity extends Activity {
 		descricao = (TextView) findViewById(R.id.detalhe_moldura_descricao);
 		polaroid = (ImageView) findViewById(R.id.detalhe_moldura_polaroid);
 		imagem = (ImageView) findViewById(R.id.detalhe_moldura_imagem);
+		imagem.setOnClickListener(configurarOnImagemClickListener());
 		ellipze = (TextView) findViewById(R.id.detalhe_moldura_ellipze);
 		recuperarExtras();
 		carregarValores();
+	}
+
+	private OnClickListener configurarOnImagemClickListener() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				exibirDialogAdicionarFoto();
+			}
+		};
 	}
 
 	private void configurarActionBar() {
@@ -101,7 +118,7 @@ public class DetalheMolduraActivity extends Activity {
 				imagem.setAdjustViewBounds(true);
 				imagem.setLayoutParams(params);
 				imagem.setScaleType(ScaleType.FIT_XY);
-				if(foto.getArquivo() != null){
+				if(foto.getCreatedAt() != null){
 					new CarregarImagemAsyncTask().execute();
 				}
 			}
@@ -195,13 +212,16 @@ public class DetalheMolduraActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode == RESULT_OK){
-			try {
 				switch (requestCode) {
 				case RESULT_LOAD_IMAGE:
-					if(data != null){
-						buscarImagemNaGaleria(data);
-						String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-						CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 300, 300);
+					try {
+						if(data != null){
+							buscarImagemNaGaleria(data);
+							String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
+							CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 300, 300);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 					break;
 				case RESULT_TAKE_IMAGE:
@@ -209,14 +229,29 @@ public class DetalheMolduraActivity extends Activity {
 					CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 300, 300);
 					break;
 				case CropImage.CROP_IMAGE:
-					cropImage(data);
+					try {
+						cropImage(data);
+						iniciarCompartilharESalvar();
+					} catch (ParseException e) {
+					}
 					break;
 				}
-			} catch (Exception e) {
-				System.out.println(e);
+		}else{
+			if(foto.getCreatedAt() == null){
+				imagem.setImageResource(android.R.color.transparent);
+				ellipze.setVisibility(View.VISIBLE);
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private void iniciarCompartilharESalvar() {
+		TransferParse.getInstance().put(foto.getObjectId(), foto);
+		Map<String, Serializable> extras = new HashMap<String, Serializable>();
+		extras.put(SalvarCompartilharActivity.FOTO_SALVAR_COMPARTILHAR, foto.getObjectId());
+		NavegacaoUtil.navegarComResultComExtra(this, 
+				SalvarCompartilharActivity.class, 
+				REQUEST_SALVAR_COMPARTILHAR, extras);
 	}
 	
 	private void cropImage(Intent data) throws ParseException {
@@ -226,11 +261,6 @@ public class DetalheMolduraActivity extends Activity {
 			imagem.setImageBitmap(photo);
 			foto.setArquivo(new ParseFile(ComponentBoxUtil.convertBitmapToBytes(photo)));
 			ellipze.setVisibility(View.GONE);
-		}
-		String pathImageFoto = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-		File f = new File(pathImageFoto);
-		if (f.exists()){
-			f.delete();
 		}
 	}
 	
@@ -244,23 +274,35 @@ public class DetalheMolduraActivity extends Activity {
 		cursor.close();
 	}
 	
+	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(menu != null){
+			menu.clear();
+		}
 		getMenuInflater().inflate(R.menu.menu_detalhe_moldura, menu);
-		return super.onCreateOptionsMenu(menu);
+		if(foto.getCreatedAt() == null){
+			menu.findItem(R.id.menu_detalhe_moldura_compartilhar).setVisible(false);
+			menu.findItem(R.id.menu_detalhe_moldura_excluir).setVisible(false);
+		}else{
+			menu.findItem(R.id.menu_detalhe_moldura_compartilhar).setVisible(true);
+			menu.findItem(R.id.menu_detalhe_moldura_excluir).setVisible(true);
+		}
+		return super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			TransferParse.getInstance().remove(foto.getObjectId());
 			finish();
 			break;
 		case R.id.menu_detalhe_moldura_tirar_foto:
 			exibirDialogAdicionarFoto();
 			break;
 		case R.id.menu_detalhe_moldura_compartilhar:
-			
+			iniciarCompartilharESalvar();
 			break;
 		case R.id.menu_detalhe_moldura_excluir:
 			
