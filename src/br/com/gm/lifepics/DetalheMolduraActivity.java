@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import br.com.gm.lifepics.callback.Callback;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
 import br.com.gm.lifepics.model.TransferParse;
@@ -54,6 +55,8 @@ public class DetalheMolduraActivity extends Activity {
 	private TextView ellipze;
 	
 	private Foto foto;
+	private Bitmap bitmapImagem;
+	private boolean primeiraFotoNaMoldura;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,8 @@ public class DetalheMolduraActivity extends Activity {
 		if(foto == null){
 			foto = new Foto();
 			foto.setMoldura((Moldura) TransferParse.getInstance().get(getIntent().getExtras().getString(CACHE_DETALHE_MOLDURA)));
+		}else{
+			primeiraFotoNaMoldura = true;
 		}
 	}
 	
@@ -143,6 +148,33 @@ public class DetalheMolduraActivity extends Activity {
 			super.onPostExecute(result);
 			imagem.setImageBitmap(result);
 			ellipze.setVisibility(View.GONE);
+			bitmapImagem = result;
+		}
+	}
+	
+	class CriarNovaImagemParseFileAsyncTask extends AsyncTask<Void, Void, Void>{
+
+		private Bitmap bitmap;
+		private Callback callback;
+
+		public CriarNovaImagemParseFileAsyncTask(Bitmap bitmap, Callback callback) {
+			this.bitmap = bitmap;
+			this.callback = callback;
+		}
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+			String imageFileName = "JPEG_" + DataUtil.transformDateToSting(new Date(), "dd_MM_yyyy_HH_mm_ss") + "_.jpg";
+			foto.setArquivo(new ParseFile(imageFileName, ComponentBoxUtil.convertBitmapToBytes(bitmap)));
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			if(callback != null){
+				callback.onReturn(null);
+			}
 		}
 	}
 	
@@ -231,24 +263,30 @@ public class DetalheMolduraActivity extends Activity {
 				case CropImage.CROP_IMAGE:
 					try {
 						cropImage(data);
-						iniciarCompartilharESalvar();
+						if(foto.getCreatedAt() != null){
+							primeiraFotoNaMoldura = false;
+						}
 					} catch (ParseException e) {
 					}
 					break;
 				}
 		}else{
-			if(foto.getCreatedAt() == null){
+			if(primeiraFotoNaMoldura || foto.getCreatedAt() != null){
+				imagem.setImageBitmap(bitmapImagem);
+				new CriarNovaImagemParseFileAsyncTask(bitmapImagem, null).execute();
+			}else{
 				imagem.setImageResource(android.R.color.transparent);
 				ellipze.setVisibility(View.VISIBLE);
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
+	
 	private void iniciarCompartilharESalvar() {
 		TransferParse.getInstance().put(foto.getObjectId(), foto);
 		Map<String, Serializable> extras = new HashMap<String, Serializable>();
 		extras.put(SalvarCompartilharActivity.FOTO_SALVAR_COMPARTILHAR, foto.getObjectId());
+		extras.put(SalvarCompartilharActivity.PRIMEIRA_FOTO_NA_MOLDURA, primeiraFotoNaMoldura);
 		NavegacaoUtil.navegarComResultComExtra(this, 
 				SalvarCompartilharActivity.class, 
 				REQUEST_SALVAR_COMPARTILHAR, extras);
@@ -259,11 +297,21 @@ public class DetalheMolduraActivity extends Activity {
 		if (extras != null) {
 			Bitmap photo = extras.getParcelable("data");
 			imagem.setImageBitmap(photo);
-			foto.setArquivo(new ParseFile(ComponentBoxUtil.convertBitmapToBytes(photo)));
+			new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
 			ellipze.setVisibility(View.GONE);
 		}
 	}
 	
+	private Callback configurarOnCriarNovaImagemCallback() {
+		return new Callback() {
+
+			@Override
+			public void onReturn(Exception excpetion, Object... objects) {
+				iniciarCompartilharESalvar();
+			}
+		};
+	}
+
 	private void buscarImagemNaGaleria(Intent data) throws Exception {
 		Uri selectedImage = data.getData();
 		String[] filePathColumn = { MediaStore.Images.Media.DATA };

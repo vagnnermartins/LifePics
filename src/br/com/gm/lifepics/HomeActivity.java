@@ -253,6 +253,7 @@ public class HomeActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.menu_home_refresh:
 			buscarMolduras();
+			buscarMinhasFotos();
 			break;
 		case R.id.menu_home_grid:
 			SessaoUtil.adicionarValores(this, Constants.ESTILO, Constants.GRID);

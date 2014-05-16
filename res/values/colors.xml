@@ -28,5 +28,6 @@
 	<color name="verde_lp_80">#D90D9185</color>    
 	<color name="azul_fb">#3B5998</color>    
 	<color name="branco">#f8f8f8f8</color> 
-	<color name="cinza">#696969</color> 
+	<color name="cinza">#CC555555</color> 
+	<color name="back_toast">#696969</color> 
 </resources>

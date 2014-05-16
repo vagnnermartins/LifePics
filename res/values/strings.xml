@@ -12,9 +12,9 @@
     <string name="msg_sair">Deseja realmente sair?</string>
     <string name="sim">Sim</string>
     <string name="msg_salvando_foto">Salvando foto#8230;</string>
-    <string name="msg_compartilhando_em_lf">Compartilhando em LifePics#8230;</string>
-    <string name="msg_compartilhando_em_fb">Compartilhando em Facebook#8230;</string>
-    <string name="msg_compartilhando_em_twitter">Compartilhando em Twitter#8230;</string>
+    <string name="msg_compartilhando_em_lf">Compartilhando em LifePics...</string>
+    <string name="msg_compartilhando_em_fb">Compartilhando em Facebook...</string>
+    <string name="msg_compartilhando_em_twitter">Compartilhando em Twitter...</string>
     <string name="msg_finalizado">Finalizado!</string>
     
     <!-- Detalhe moldura -->

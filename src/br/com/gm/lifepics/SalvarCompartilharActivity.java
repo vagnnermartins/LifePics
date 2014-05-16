@@ -1,6 +1,7 @@
 package br.com.gm.lifepics;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,20 +13,30 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.TransferParse;
+import br.com.gm.lifepics.util.FacebookUtil;
+import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 public class SalvarCompartilharActivity extends Activity {
 	
 	public static final String FOTO_SALVAR_COMPARTILHAR = "foto_salvar_compartilhar";
+	public static final String PRIMEIRA_FOTO_NA_MOLDURA = "primeira_foto_na_moldura";
+	private static final int REAUTH_ACTIVITY_CODE = 0;
 	
 	private Foto foto;
+	private boolean primeiraFotoNaMoldura;
 	
 	private TextView titulo;
 	private ImageView polaroid;
 	private ImageView imagem;
 	private TextView descricao;
+	
+	private ToastSliding toast;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +62,50 @@ public class SalvarCompartilharActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
+	public void onSalvarCompartilhar(View view){
+		if(!primeiraFotoNaMoldura){
+			try {
+				toast = new ToastSliding(this); 
+				toast.show(ToastSliding.SALVANDO_MESSAGE, 
+						ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+						R.string.msg_salvando_foto);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			foto.setUsuario(ParseUser.getCurrentUser());
+			foto.saveInBackground(configurarSaveFotoCallback());
+		}
+	}
+
+	private void compartilhar() {
+		Boolean shareFace = Boolean.valueOf((String)findViewById(R.id.salvar_compartilhar_facebook).getTag());
+		Boolean shareTwitter = Boolean.valueOf((String)findViewById(R.id.salvar_compartilhar_twitter).getTag());
+		if(shareFace){
+			FacebookUtil.publicarNoMural(SalvarCompartilharActivity.this, 
+					foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE);
+		}
+		if(shareTwitter){
+		}
+	}
+	
+	private SaveCallback configurarSaveFotoCallback() {
+		return new SaveCallback() {
+			
+			@Override
+			public void done(ParseException arg0) {
+				toast.alterarMensagem(R.string.msg_finalizado);
+				toast.removerToast(ToastSliding.SLOW_MESSAGE);
+				compartilhar();
+			}
+		};
+	}
+
 	private void carregarValores() {
 		descricao.setText(foto.getMoldura().getLegenda());
-		if(foto.getCreatedAt() == null){
-			titulo.setText(R.string.salvar_compartilhamento_salvar);
-		}else{
+		if(primeiraFotoNaMoldura){
 			titulo.setText(R.string.salvar_compartilhamento_compartilhar);
+		}else{
+			titulo.setText(R.string.salvar_compartilhamento_salvar);
 		}
 		polaroid.post(new Runnable() {
 			
@@ -102,9 +151,10 @@ public class SalvarCompartilharActivity extends Activity {
 			imagem.setImageBitmap(result);
 		}
 	}
-
+	
 	private void recuperarExtra() {
 		foto = (Foto) TransferParse.getInstance().get(getIntent().getExtras().getString(FOTO_SALVAR_COMPARTILHAR));
+		primeiraFotoNaMoldura = getIntent().getExtras().getBoolean(PRIMEIRA_FOTO_NA_MOLDURA);
 	}
 	
 	public void onCompartilharClickListener(View view){
@@ -129,6 +179,22 @@ public class SalvarCompartilharActivity extends Activity {
 			break;
 		}
 		click.setTag(String.valueOf(!tag));
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == RESULT_OK){
+			switch (requestCode) {
+			case REAUTH_ACTIVITY_CODE:
+				ParseFacebookUtils.getSession().onActivityResult(this, requestCode, resultCode, data);
+				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE);
+				break;
+
+			default:
+				break;
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 	
 	@Override
