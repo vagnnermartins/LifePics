@@ -81,8 +81,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onCompartilharClickListener"
-                android:src="@drawable/ic_share_facebook_on"
-                android:tag="true" />
+                android:src="@drawable/ic_share_facebook_off"
+                android:tag="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,8 +96,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onCompartilharClickListener"
-                android:src="@drawable/ic_share_twitter_on"
-                android:tag="true" />
+                android:src="@drawable/ic_share_twitter_off"
+                android:tag="false" />
         </LinearLayout>
     </LinearLayout>
 

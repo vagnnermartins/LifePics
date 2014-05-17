@@ -30,19 +30,22 @@ import br.com.gm.lifepics.callback.Callback;
 import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
+import br.com.gm.lifepics.util.DialogUtil;
+import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.CropImage;
 import com.componente.box.localizacao.util.DataUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
+import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 
 public class DetalheMolduraActivity extends Activity {
 	
 	public static final String CACHE_DETALHE_MOLDURA = "cache_detalhe_moldura";
-	public static final String CACHE_DETALHE_FOTO = "cache_detalhe_foto";
+//	public static final String CACHE_DETALHE_FOTO = "cache_detalhe_foto";
 	private static final int RESULT_TAKE_IMAGE = 1;
 	private static final int RESULT_LOAD_IMAGE = 2;
 	private static final int REQUEST_SALVAR_COMPARTILHAR = 3;
@@ -94,10 +97,11 @@ public class DetalheMolduraActivity extends Activity {
 	}
 
 	private void recuperarExtras() {
-		foto = (Foto) TransferParse.getInstance().get(getIntent().getExtras().getString(CACHE_DETALHE_FOTO));
+		String objectIdMoldura = getIntent().getExtras().getString(CACHE_DETALHE_MOLDURA);
+		foto = (Foto) TransferParse.getInstance().get(getIntent().getExtras().getString(objectIdMoldura));
 		if(foto == null){
 			foto = new Foto();
-			foto.setMoldura((Moldura) TransferParse.getInstance().get(getIntent().getExtras().getString(CACHE_DETALHE_MOLDURA)));
+			foto.setMoldura((Moldura) TransferParse.getInstance().get(objectIdMoldura));
 		}else{
 			primeiraFotoNaMoldura = true;
 		}
@@ -355,11 +359,67 @@ public class DetalheMolduraActivity extends Activity {
 			iniciarCompartilharESalvar();
 			break;
 		case R.id.menu_detalhe_moldura_excluir:
-			
+			excluirFoto();
 			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void excluirFoto() {
+		DialogUtil.show(this, 
+				R.string.msg_titulo_detalhe_moldura_excluir, 
+				R.string.msg_descricao_detalhe_moldura_excluir, 
+				configurarPositiveButton(), android.R.string.yes, 
+				configurarNegativeButton(), android.R.string.no);
+	}
+
+	private android.content.DialogInterface.OnClickListener configurarNegativeButton() {
+		return new android.content.DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
+	}
+
+	private android.content.DialogInterface.OnClickListener configurarPositiveButton() {
+		return new android.content.DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				try {
+					ComponentBoxUtil.verificaConexao(getApplicationContext());
+					ToastSliding toast = new ToastSliding(DetalheMolduraActivity.this);
+					toast.show(ToastSliding.FOTO_MESSAGE, 
+							bitmapImagem, 
+							R.string.msg_descricao_detalhe_moldura_excluindo);
+					imagem.setImageResource(android.R.color.transparent);
+					ellipze.setVisibility(View.VISIBLE);
+					foto.deleteEventually(configurarDeleteCallback(toast));
+				} catch (Exception e) {
+					new com.componente.box.toast.ToastSliding(DetalheMolduraActivity.this).show(com.componente.box.toast.ToastSliding.INFO_MESSAGE, 
+							getResources().getString(R.string.msg_sem_internet), 
+							com.componente.box.toast.ToastSliding.SLOW_MESSAGE);
+				}
+			}
+
+			private DeleteCallback configurarDeleteCallback(final ToastSliding toast) {
+				return new DeleteCallback() {
+					
+					@Override
+					public void done(ParseException exception) {
+						if(exception == null){
+							toast.alterarMensagem(R.string.msg_descricao_detalhe_moldura_excluir_sucesso);
+						}else{
+							toast.alterarMensagem(R.string.msg_descricao_detalhe_moldura_erro_ecluir, R.drawable.ic_delete);
+						}
+						toast.removerToast(ToastSliding.SLOW_MESSAGE);
+					}
+				};
+			}
+		};
 	}
 }

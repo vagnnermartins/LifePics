@@ -16,9 +16,21 @@
     <!-- Detalhe moldura -->
     <string name="menu_detalhe_moldura_excluir">Excluir</string>
     <string name="detalhe_moldura_adicionar_foto">Adicionar foto</string>
+    <string name="msg_titulo_detalhe_moldura_excluir">Excluir</string>
+    <string name="msg_descricao_detalhe_moldura_excluir">Deseja realmente deletar essa imagem?</string>
+    <string name="msg_descricao_detalhe_moldura_excluir_sucesso">Foto excluida com sucesso!</string>
+    <string name="msg_descricao_detalhe_moldura_excluindo">Excluindo foto</string>
+    <string name="msg_descricao_detalhe_moldura_erro_ecluir">Não foi possível excluir a foto, tente novamente mais tarde!</string>
     
     <!-- Salvar Compartilhamento -->
     <string name="salvar_compartilhamento_salvar">Salvar</string>
     <string name="salvar_compartilhamento_compartilhar">Compartilhar</string>
+    <string name="msg_descricao_erro_salvar">Erro ao salvar imagem no Álbum. Tente novamente!</string>
+    
+    <!-- Botões -->
+    <string name="sim">Sim</string>
+    <string name="nao">Não</string>
 
+    <!-- Erros -->
+    <string name="msg_sem_internet">Não foi possível encontrar uma conexão com a internet, verifque a sua conexão e tente novamente!</string>
 </resources>

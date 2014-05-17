@@ -32,7 +32,7 @@ public class ToastSliding extends RelativeLayout {
 	public static final int WARNNING_MESSAGE = 2;
 	public static final int ERROR_MESSAGE = 3;
 	public static final int SUCCESS_MESSAGE = 4;
-	public static final int SALVANDO_MESSAGE = 5;
+	public static final int FOTO_MESSAGE = 5;
 	
 
 	public ToastSliding(Context context) {
@@ -87,6 +87,11 @@ public class ToastSliding extends RelativeLayout {
 		texto.setText(mensagem);
 	}
 	
+	public void alterarMensagem(int mensagem, int imageResourceBtnFechar){
+		texto.setText(mensagem);
+		btnFechar.setImageResource(imageResourceBtnFechar);
+	}
+	
 	public void removerToast(int time){
 		progress.setVisibility(ProgressBar.GONE);
 		btnFechar.setVisibility(ImageView.VISIBLE);
@@ -112,7 +117,7 @@ public class ToastSliding extends RelativeLayout {
 		case SUCCESS_MESSAGE:
 			idColor = R.color.success;
 			break;
-		case SALVANDO_MESSAGE:
+		case FOTO_MESSAGE:
 			idColor = R.color.cinza;
 			break;
 		default:

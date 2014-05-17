@@ -61,6 +61,10 @@ public class HomeActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_home);
 		init();
+		atualizar();
+	}
+
+	private void atualizar() {
 		buscarMolduras();
 		buscarMinhasFotos();
 	}
@@ -86,7 +90,7 @@ public class HomeActivity extends Activity {
 		if(mensagem != null){
 			mensagem.setCallback(configurarCallbackMensagem());
 			toast = new ToastSliding(this);
-			toast.show(ToastSliding.SALVANDO_MESSAGE, 
+			toast.show(ToastSliding.FOTO_MESSAGE, 
 					mensagem.getImagem(), 
 					mensagem.getMensagem());
 			if(mensagem.getStatus().equals(Constants.STATUS_EXIBIDA)){
@@ -103,6 +107,7 @@ public class HomeActivity extends Activity {
 			public void onReturn(Exception excpetion, Object... objects) {
 				toast.alterarMensagem(R.string.msg_finalizado);
 				toast.removerToast(ToastSliding.SLOW_MESSAGE);
+				atualizar();
 			}
 		};
 	}
@@ -119,7 +124,7 @@ public class HomeActivity extends Activity {
 				if(foto != null){
 					foto.setMoldura(molduras.get(molduraObjectId));
 					TransferParse.getInstance().put(foto.getObjectId(), foto); 
-					intent.putExtra(DetalheMolduraActivity.CACHE_DETALHE_FOTO, foto.getObjectId());
+					intent.putExtra(molduraObjectId, foto.getObjectId());
 				}else{
 					TransferParse.getInstance().put(molduraObjectId, molduras.get(molduraObjectId)); 
 				}
@@ -253,7 +258,10 @@ public class HomeActivity extends Activity {
 			if(imagem != null && result != null){
 				imagem.setImageBitmap(result);
 				imagem.setVisibility(View.VISIBLE);
-				container.findViewWithTag(foto.getMoldura().getObjectId() + "ellipze").setVisibility(View.GONE);
+				View ellipze = container.findViewWithTag(foto.getMoldura().getObjectId() + "ellipze");
+				if(ellipze != null){
+					ellipze.setVisibility(View.GONE);
+				}
 			}
 		}
 	}
@@ -290,8 +298,7 @@ public class HomeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_home_refresh:
-			buscarMolduras();
-			buscarMinhasFotos();
+			atualizar();
 			break;
 		case R.id.menu_home_grid:
 			SessaoUtil.adicionarValores(this, Constants.ESTILO, Constants.GRID);

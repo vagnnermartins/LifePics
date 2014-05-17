@@ -18,7 +18,9 @@
         android:src="@drawable/ic_launcher"
         android:adjustViewBounds="true"
         android:maxWidth="40dp"
-        android:maxHeight="40dp" />
+        android:maxHeight="40dp"
+        android:minHeight="40dp"
+        android:minWidth="40dp" />
 
     <TextView
         android:id="@+id/toast_lp_texto_msgs"
@@ -39,9 +41,9 @@
 
         <ImageView
             android:id="@+id/toast_lp_btn_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/checkmark"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_check"
             android:visibility="gone" />
         <ProgressBar 
             android:id="@+id/toast_lp_progress"

@@ -19,6 +19,7 @@ import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.util.FacebookUtil;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
+import com.componente.box.toast.ToastSliding;
 import com.facebook.Request.Callback;
 import com.facebook.Response;
 import com.parse.ParseException;
@@ -69,12 +70,19 @@ public class SalvarCompartilharActivity extends Activity {
 	}
 	
 	public void onSalvarCompartilhar(View view){
-		if(!primeiraFotoNaMoldura){
-			// Se atualmente ele não tem foto na current moldura eu salvo
-			salvar();
-		}else{
-			// Está apenas compartilhando uma foto existente
-			compartilhar();
+		try {
+			ComponentBoxUtil.verificaConexao(this);
+			if(!primeiraFotoNaMoldura){
+				// Se atualmente ele não tem foto na current moldura eu salvo
+				salvar();
+			}else{
+				// Está apenas compartilhando uma foto existente
+				compartilhar();
+			}
+		} catch (Exception e) {
+			new ToastSliding(this).show(ToastSliding.INFO_MESSAGE, 
+					getResources().getString(R.string.msg_sem_internet), 
+					ToastSliding.SLOW_MESSAGE);
 		}
 	}
 
@@ -159,9 +167,17 @@ public class SalvarCompartilharActivity extends Activity {
 		return new SaveCallback() {
 			
 			@Override
-			public void done(ParseException arg0) {
-				mensagem.getCallback().onReturn(null);
-				compartilhar();
+			public void done(ParseException exception) {
+				if(exception == null){
+					mensagem.getCallback().onReturn(null);
+					compartilhar();
+				}else{
+					/**
+					 * Se não foi possível salvar enviar mensagem de erro
+					 */
+					mensagem.setMensagem(R.string.msg_descricao_erro_salvar);
+					mensagem.getCallback().onReturn(null);
+				}
 			}
 		};
 	}
@@ -298,7 +314,6 @@ public class SalvarCompartilharActivity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
 		finalizar();
 	}
 
