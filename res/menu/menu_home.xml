@@ -20,8 +20,12 @@
 
     <group>
         <item
-            android:id="@+id/menu_home_desconectar"
-            android:title="@string/menu_home_desconectar"/>
+            android:id="@+id/menu_home_logout"
+            android:title="@string/menu_home_logout"/>
+        
+        <item
+            android:id="@+id/menu_home_login"
+            android:title="@string/menu_home_login"/>
     </group>
 
 </menu>

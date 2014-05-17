@@ -64,7 +64,8 @@
             android:layout_gravity="center"
             android:background="@color/cinza"
             android:gravity="center"
-            android:padding="10dp" >
+            android:padding="10dp"
+            android:onClick="onCadastrarMaisTarde" >
 
             <TextView
                 android:layout_width="wrap_content"

@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Copa del Mundo 2014</string>
+    <string name="app_name">LifePics</string>
+    <string name="splashscreen_entrar_com_o_fb">Ingresar con Facebook</string>
+    <string name="splashscreen_cadastrar_mais_tarde">Registrar más tarde</string>
+    <string name="menu_home_logout">Logout</string>
+    <string name="menu_home_login">Login</string>
+    <string name="bem_vindo">Bienvenido!</string>
+    <string name="msg_login_realizado">Ahora tu puedes compartir los mejores momentos de su vida.</string>
+    
+    <!-- Inicio -->
+    <string name="msg_salvando_foto">Guardando la imagen...</string>
+    <string name="msg_compartilhando">Compartir...</string>
+    <string name="msg_finalizado">Finalizado!</string>
+    
+    <!-- Detalhe moldura -->
+    <string name="menu_detalhe_moldura_excluir">Borrar</string>
+    <string name="detalhe_moldura_adicionar_foto">Elegir foto</string>
+    <string name="msg_descricao_detalhe_moldura_excluir">Quieres realmente borrar esa imagen?</string>
+    <string name="msg_descricao_detalhe_moldura_excluir_sucesso">Foto eliminada con ėxito!</string>
+    <string name="msg_descricao_detalhe_moldura_excluindo">Borrado de imágenes</string>
+    <string name="msg_descricao_detalhe_moldura_erro_ecluir">No se puede eliminar la foto, vuelva a intentarlo más tarde!</string>
+    
+    <!-- Botões -->
+    <string name="sim">Sí</string>
+    <string name="nao">No</string>
+    <string name="login_facebook">Facebook login</string>
+    <string name="nao_obrigado">No, gracias!</string>
+    
+    <!-- Salvar Compartilhamento -->
+    <string name="salvar_compartilhamento_salvar">Guardar</string>
+    <string name="salvar_compartilhamento_compartilhar">Compartir</string>
+    <string name="msg_descricao_erro_salvar">Error al gravar foto. Inténtalo de nuevo!</string>
+    <string name="msg_descricao_erro_salvar_sem_login">Para publicar una foto es necesario hacer login.</string>
+    
+    <!-- Erros -->
+    <string name="msg_erro_buscar_moldura">Error al cargar Marcos.</string>
+    <string name="msg_erro_buscar_fotos">Error al descargar Fotos.</string>
     
 </resources>
