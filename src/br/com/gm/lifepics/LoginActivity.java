@@ -1,10 +1,17 @@
 package br.com.gm.lifepics;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import br.com.gm.lifepics.constants.Constants;
@@ -32,6 +39,24 @@ public class LoginActivity extends Activity {
 	}
 
 	private void init() {
+		PackageInfo info;
+		try {
+		    info = getPackageManager().getPackageInfo("br.com.gm.lifepics", PackageManager.GET_SIGNATURES);
+		    for (Signature signature : info.signatures) {
+		        MessageDigest md;
+		        md = MessageDigest.getInstance("SHA");
+		        md.update(signature.toByteArray());
+		        String something = new String(Base64.encode(md.digest(), 0));
+		        //String something = new String(Base64.encodeBytes(md.digest()));
+		        Log.e("hash key", something);
+		    }
+		} catch (NameNotFoundException e1) {
+		    Log.e("name not found", e1.toString());
+		} catch (NoSuchAlgorithmException e) {
+		    Log.e("no such an algorithm", e.toString());
+		} catch (Exception e) {
+		    Log.e("exception", e.toString());
+		}
 		initParse();
 		if(ParseUser.getCurrentUser() != null){
 			navegar();

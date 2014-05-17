@@ -27,9 +27,9 @@ import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.gm.lifepics.callback.Callback;
+import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
-import br.com.gm.lifepics.model.TransferParse;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.CropImage;
@@ -270,7 +270,7 @@ public class DetalheMolduraActivity extends Activity {
 					}
 					break;
 				}
-		}else{
+		} else if(resultCode == RESULT_FIRST_USER){
 			if(primeiraFotoNaMoldura || foto.getCreatedAt() != null){
 				imagem.setImageBitmap(bitmapImagem);
 				new CriarNovaImagemParseFileAsyncTask(bitmapImagem, null).execute();
@@ -278,6 +278,8 @@ public class DetalheMolduraActivity extends Activity {
 				imagem.setImageResource(android.R.color.transparent);
 				ellipze.setVisibility(View.VISIBLE);
 			}
+		}else{
+			finish();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}

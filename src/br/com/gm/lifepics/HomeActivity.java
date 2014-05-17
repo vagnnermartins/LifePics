@@ -18,12 +18,16 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import br.com.gm.lifepics.callback.Callback;
+import br.com.gm.lifepics.componente.ManagerMessage;
+import br.com.gm.lifepics.componente.MensagemDTO;
+import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
-import br.com.gm.lifepics.model.TransferParse;
 import br.com.gm.lifepics.uihelper.HomeGridUIHelper;
 import br.com.gm.lifepics.uihelper.HomePolaroidUIHelper;
+import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
@@ -48,6 +52,8 @@ public class HomeActivity extends Activity {
 	private boolean isAtualizando;
 
 	private Menu menu;
+
+	private ToastSliding toast;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,38 @@ public class HomeActivity extends Activity {
 		gridUIHelper = new HomeGridUIHelper(HomeActivity.this, configurarOnItemClickListener());
 		minhasFotos = new HashMap<String, Foto>();
 		molduras = new HashMap<String, Moldura>();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		verificarMensagemNaSessao();
+	}
+	
+	private void verificarMensagemNaSessao(){
+		MensagemDTO mensagem = ManagerMessage.getInstance().get(Constants.MENSAGEM_TOAST);
+		if(mensagem != null){
+			mensagem.setCallback(configurarCallbackMensagem());
+			toast = new ToastSliding(this);
+			toast.show(ToastSliding.SALVANDO_MESSAGE, 
+					mensagem.getImagem(), 
+					mensagem.getMensagem());
+			if(mensagem.getStatus().equals(Constants.STATUS_EXIBIDA)){
+				mensagem.getCallback().onReturn(null);
+			}
+			ManagerMessage.getInstance().remove(Constants.MENSAGEM_TOAST);
+		}
+	}
+
+	private Callback configurarCallbackMensagem() {
+		return new Callback() {
+			
+			@Override
+			public void onReturn(Exception excpetion, Object... objects) {
+				toast.alterarMensagem(R.string.msg_finalizado);
+				toast.removerToast(ToastSliding.SLOW_MESSAGE);
+			}
+		};
 	}
 
 	private OnClickListener configurarOnItemClickListener() {

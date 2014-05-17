@@ -1,4 +1,4 @@
-package br.com.gm.lifepics.model;
+package br.com.gm.lifepics.componente;
 
 import java.util.HashMap;
 import java.util.Map;

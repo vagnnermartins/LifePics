@@ -11,12 +11,16 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import br.com.gm.lifepics.componente.ManagerMessage;
+import br.com.gm.lifepics.componente.MensagemDTO;
+import br.com.gm.lifepics.componente.TransferParse;
+import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
-import br.com.gm.lifepics.model.TransferParse;
 import br.com.gm.lifepics.util.FacebookUtil;
-import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
+import com.facebook.Request.Callback;
+import com.facebook.Response;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -36,7 +40,9 @@ public class SalvarCompartilharActivity extends Activity {
 	private ImageView imagem;
 	private TextView descricao;
 	
-	private ToastSliding toast;
+	private MensagemDTO mensagem;
+	
+	private boolean currentActivity;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,17 +70,55 @@ public class SalvarCompartilharActivity extends Activity {
 	
 	public void onSalvarCompartilhar(View view){
 		if(!primeiraFotoNaMoldura){
-			try {
-				toast = new ToastSliding(this); 
-				toast.show(ToastSliding.SALVANDO_MESSAGE, 
-						ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
-						R.string.msg_salvando_foto);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			foto.setUsuario(ParseUser.getCurrentUser());
-			foto.saveInBackground(configurarSaveFotoCallback());
+			// Se atualmente ele não tem foto na current moldura eu salvo
+			salvar();
+		}else{
+			// Está apenas compartilhando uma foto existente
+			compartilhar();
 		}
+	}
+
+	private void salvar() {
+		exibirMensagem(R.string.msg_salvando_foto);
+		foto.setUsuario(ParseUser.getCurrentUser());
+		foto.saveInBackground(configurarSaveFotoCallback());
+	}
+
+	/**
+	 * Coloco na ManagerSessão a mensagem a ser exibida quando finalizar a ação.
+	 * @param resMensagem mensagem a ser exibida
+	 */
+	private void exibirMensagem(int resMensagem) {
+		try {
+			mensagem = new MensagemDTO(
+					ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+					resMensagem, 
+					Constants.STATUS_PENDENTE);
+			ManagerMessage.getInstance().put(Constants.MENSAGEM_TOAST, mensagem);
+			/**
+			 * Verifica se está na Current Activity, caso esteja redireciona para a Home
+			 */
+			if(currentActivity){
+				Intent intent = new Intent(SalvarCompartilharActivity.this, HomeActivity.class); 
+				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				startActivity(intent);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		currentActivity = false;
+	}
+	
+	@Override
+	public void onResume() {
+	    super.onResume();
+	    currentActivity = true;
 	}
 
 	private void compartilhar() {
@@ -82,24 +126,50 @@ public class SalvarCompartilharActivity extends Activity {
 		Boolean shareTwitter = Boolean.valueOf((String)findViewById(R.id.salvar_compartilhar_twitter).getTag());
 		if(shareFace){
 			FacebookUtil.publicarNoMural(SalvarCompartilharActivity.this, 
-					foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE);
+					foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
 		}
 		if(shareTwitter){
+			//TODO Implementar compartilhar no Twitter
+		}
+		if(!shareFace && !shareTwitter){
+			//Não compartilhou e nem salvou, então finalizo a activity voltando para o DetalheMolduraActivity
+			finish();
+		}else{
+			// Compartilhou no face ou twitter, então exibo a mensagem de compartilhando!
+			exibirMensagem(R.string.msg_compartilhando);
 		}
 	}
 	
+	private Callback configurarCallbackCompartilharFace() {
+		return new Callback() {
+			
+			@Override
+			public void onCompleted(Response response) {
+				if(mensagem.getCallback() != null){
+					mensagem.getCallback().onReturn(null);
+				}else{
+					ManagerMessage.getInstance().get(Constants.MENSAGEM_TOAST).setStatus(Constants.STATUS_EXIBIDA);
+				}
+				finish();
+			}
+		};
+	}
+
 	private SaveCallback configurarSaveFotoCallback() {
 		return new SaveCallback() {
 			
 			@Override
 			public void done(ParseException arg0) {
-				toast.alterarMensagem(R.string.msg_finalizado);
-				toast.removerToast(ToastSliding.SLOW_MESSAGE);
+				mensagem.getCallback().onReturn(null);
 				compartilhar();
 			}
 		};
 	}
 
+	/**
+	 * Carrega os valores para a tela, verifica se o usuário 
+	 * está salvando ou apenas compartilhando uma foto
+	 */
 	private void carregarValores() {
 		descricao.setText(foto.getMoldura().getLegenda());
 		if(primeiraFotoNaMoldura){
@@ -132,6 +202,11 @@ public class SalvarCompartilharActivity extends Activity {
 		});
 	}
 	
+	/**
+	 * AsyncTask para Carregar o Bitmap a ser usado para não travar a Thread Principal
+	 * @author vagnnermartins
+	 *
+	 */
 	class CarregarImagemAsyncTask extends AsyncTask<Void, Void, Bitmap>{
 
 		@Override
@@ -152,11 +227,18 @@ public class SalvarCompartilharActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Recupero os valores passado pela Intent
+	 */
 	private void recuperarExtra() {
 		foto = (Foto) TransferParse.getInstance().get(getIntent().getExtras().getString(FOTO_SALVAR_COMPARTILHAR));
 		primeiraFotoNaMoldura = getIntent().getExtras().getBoolean(PRIMEIRA_FOTO_NA_MOLDURA);
 	}
 	
+	/**
+	 * Habilita ou desabilita a opção de compartilhar clicada
+	 * @param view
+	 */
 	public void onCompartilharClickListener(View view){
 		ImageView click = (ImageView) view;
 		Boolean tag = Boolean.valueOf((String) click.getTag());
@@ -183,30 +265,45 @@ public class SalvarCompartilharActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode == RESULT_OK){
 			switch (requestCode) {
+			/**
+			 * Resulto caso seja o primeiro compartilhamento do usuário pelo facebook. 
+			 */
 			case REAUTH_ACTIVITY_CODE:
 				ParseFacebookUtils.getSession().onActivityResult(this, requestCode, resultCode, data);
-				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE);
+				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
 				break;
 
 			default:
 				break;
 			}
 		}
-		super.onActivityResult(requestCode, resultCode, data);
+		finish();
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			finish();
+			finalizar();
 			break;
 
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finalizar();
+	}
+
+	private void finalizar() {
+		setResult(RESULT_FIRST_USER);
+		finish();
 	}
 }

@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import com.facebook.HttpMethod;
 import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.Session.StatusCallback;
 import com.facebook.SessionDefaultAudience;
@@ -19,7 +18,7 @@ import com.parse.ParseFile;
 
 public class FacebookUtil {
 	
-	public static void publicarNoMural(Activity activity, String mensagem, ParseFile imagem, int requestCode){
+	public static void publicarNoMural(Activity activity, String mensagem, ParseFile imagem, int requestCode, Request.Callback callback){
 		if (ParseFacebookUtils.getSession() != null && ParseFacebookUtils.getSession().isOpened()) {
 		    List<String> permissions = ParseFacebookUtils.getSession().getPermissions();
 		    if (!permissions.contains("publish_actions")) {
@@ -30,12 +29,12 @@ public class FacebookUtil {
 		                        .setRequestCode(requestCode);
 		        ParseFacebookUtils.getSession().requestNewPublishPermissions(newPermissionsRequest);
 		    } else {
-				publicarNoFacebook(imagem, mensagem);
+				publicarNoFacebook(imagem, mensagem, callback);
 		    }
 		}
 	}
 	
-	private static void publicarNoFacebook(ParseFile file, String mensagem) {
+	private static void publicarNoFacebook(ParseFile file, String mensagem, Request.Callback callback) {
 		try {
 			Bundle params = new Bundle();
 				params.putByteArray("source", file.getData());
@@ -45,12 +44,7 @@ public class FacebookUtil {
 			    "/me/photos",
 			    params,
 			    HttpMethod.POST,
-			    new Request.Callback() {
-			        public void onCompleted(Response response) {
-			        	System.out.println(response);
-			        }
-			    }
-			).executeAsync();
+			    callback).executeAsync();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

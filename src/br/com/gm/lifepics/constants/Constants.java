@@ -11,4 +11,12 @@ public class Constants {
     public static final String ESTILO = "estidlo";
     public static final String POLAROID = "polaroid";
     public static final String GRID = "grid";
+    
+    public static final String CARREGANDO = "carregando";
+    public static final String MENSAGEM_TOAST = "mensagem_toast";
+//	public static final String MENSAGEM_COMPARTILHADO = "mensagem_compartilhado";
+//	public static final String MENSAGEM_FOTO = "mensagem_foto";
+//	public static final String MENSAGEM_FINALIZADO = "mensagem_finalizado";
+	public static final String STATUS_EXIBIDA = "status_exibida";
+	public static final String STATUS_PENDENTE = "status_pendente";
 }
