@@ -24,7 +24,7 @@ public class FacebookUtil {
 		    if (!permissions.contains("publish_actions")) {
 		        Session.NewPermissionsRequest newPermissionsRequest =
 		                new Session.NewPermissionsRequest(activity, Arrays.asList("publish_actions"))
-		                        .setDefaultAudience(SessionDefaultAudience.ONLY_ME)
+		                        .setDefaultAudience(SessionDefaultAudience.FRIENDS)
 		                        .setCallback(configurarPermissionCallback())
 		                        .setRequestCode(requestCode);
 		        ParseFacebookUtils.getSession().requestNewPublishPermissions(newPermissionsRequest);
@@ -38,7 +38,7 @@ public class FacebookUtil {
 		try {
 			Bundle params = new Bundle();
 				params.putByteArray("source", file.getData());
-			params.putString("message", "\"" + mensagem + "\"");
+			params.putString("message", "\"" + mensagem + "\" " + "http://goo.gl/GgII7K");
 			new Request(
 			    ParseFacebookUtils.getSession(),
 			    "/me/photos",
