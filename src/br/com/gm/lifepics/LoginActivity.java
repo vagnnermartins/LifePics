@@ -1,19 +1,12 @@
 package br.com.gm.lifepics;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
+import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
@@ -39,33 +32,38 @@ public class LoginActivity extends Activity {
 	}
 
 	private void init() {
-		PackageInfo info;
-		try {
-		    info = getPackageManager().getPackageInfo("br.com.gm.lifepics", PackageManager.GET_SIGNATURES);
-		    for (Signature signature : info.signatures) {
-		        MessageDigest md;
-		        md = MessageDigest.getInstance("SHA");
-		        md.update(signature.toByteArray());
-		        String something = new String(Base64.encode(md.digest(), 0));
-		        //String something = new String(Base64.encodeBytes(md.digest()));
-		        Log.e("hash key", something);
-		    }
-		} catch (NameNotFoundException e1) {
-		    Log.e("name not found", e1.toString());
-		} catch (NoSuchAlgorithmException e) {
-		    Log.e("no such an algorithm", e.toString());
-		} catch (Exception e) {
-		    Log.e("exception", e.toString());
-		}
+//		PackageInfo info;
+//		try {
+//		    info = getPackageManager().getPackageInfo("br.com.gm.lifepics", PackageManager.GET_SIGNATURES);
+//		    for (Signature signature : info.signatures) {
+//		        MessageDigest md;
+//		        md = MessageDigest.getInstance("SHA");
+//		        md.update(signature.toByteArray());
+//		        String something = new String(Base64.encode(md.digest(), 0));
+//		        //String something = new String(Base64.encodeBytes(md.digest()));
+//		        Log.e("hash key", something);
+//		    }
+//		} catch (NameNotFoundException e1) {
+//		    Log.e("name not found", e1.toString());
+//		} catch (NoSuchAlgorithmException e) {
+//		    Log.e("no such an algorithm", e.toString());
+//		} catch (Exception e) {
+//		    Log.e("exception", e.toString());
+//		}
 		initParse();
 		if(ParseUser.getCurrentUser() != null){
 			navegar();
 		}
 		verificarIdioma();
+		initTransferParse();
+	}
+
+	private void initTransferParse() {
+		TransferParse.getInstance().clearAll();
 	}
 
 	private void verificarIdioma() {
-		SessaoUtil.adicionarValores(this, Constants.ESTILO, Constants.POLAROID);
+		SessaoUtil.adicionarValores(this, Constants.ESTILO, Constants.GRID);
 	}
 
 	public void onClickLoginFacebook(View view){
@@ -73,6 +71,10 @@ public class LoginActivity extends Activity {
 		ParseFacebookUtils.logIn(
 				Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
 				this, callBackLoginFacebook());
+	}
+	
+	public void onCadastrarMaisTarde(View view){
+		navegar();
 	}
 
 	private LogInCallback callBackLoginFacebook() {
@@ -82,12 +84,9 @@ public class LoginActivity extends Activity {
 			public void done(ParseUser user, ParseException err) {
 				findViewById(R.id.login_progress_facebook).setVisibility(View.GONE);
 				if (user == null) {
-					Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
 			    } else if (user.isNew()) {
-			    	Log.d("MyApp", "User signed up and logged in through Facebook!");
 			    	navegar();
 			    } else {
-			    	Log.d("MyApp", "User logged in through Facebook!");
 			    	navegar();
 			    }
 			}
@@ -100,10 +99,13 @@ public class LoginActivity extends Activity {
 	}
 
 	private void initParse() {
-		ParseObject.registerSubclass(Moldura.class);
-		ParseObject.registerSubclass(Foto.class);
-		Parse.initialize(this, Constants.PARSE_APP_ID, Constants.PARSE_CLIENT_KEY);
-		ParseFacebookUtils.initialize(Constants.FACEBOOK_APP_ID);
+		try {
+			ParseObject.registerSubclass(Moldura.class);
+			ParseObject.registerSubclass(Foto.class);
+			Parse.initialize(LoginActivity.this, Constants.PARSE_APP_ID, Constants.PARSE_CLIENT_KEY);
+			ParseFacebookUtils.initialize(Constants.FACEBOOK_APP_ID);
+		} catch (Exception e) {
+		}
 	}
 	
 	@Override

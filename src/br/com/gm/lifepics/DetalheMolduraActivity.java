@@ -45,7 +45,6 @@ import com.parse.ParseFile;
 public class DetalheMolduraActivity extends Activity {
 	
 	public static final String CACHE_DETALHE_MOLDURA = "cache_detalhe_moldura";
-//	public static final String CACHE_DETALHE_FOTO = "cache_detalhe_foto";
 	private static final int RESULT_TAKE_IMAGE = 1;
 	private static final int RESULT_LOAD_IMAGE = 2;
 	private static final int REQUEST_SALVAR_COMPARTILHAR = 3;
@@ -98,7 +97,10 @@ public class DetalheMolduraActivity extends Activity {
 
 	private void recuperarExtras() {
 		String objectIdMoldura = getIntent().getExtras().getString(CACHE_DETALHE_MOLDURA);
-		foto = (Foto) TransferParse.getInstance().get(getIntent().getExtras().getString(objectIdMoldura));
+		String keyFoto = getIntent().getExtras().getString(objectIdMoldura);
+		if(keyFoto != null){
+			foto = (Foto) TransferParse.getInstance().get(keyFoto);
+		}
 		if(foto == null){
 			foto = new Foto();
 			foto.setMoldura((Moldura) TransferParse.getInstance().get(objectIdMoldura));
@@ -185,7 +187,7 @@ public class DetalheMolduraActivity extends Activity {
 	private void exibirDialogAdicionarFoto() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setItems(R.array.adicionar_foto, onItemAdicionarFotoClickListener());
-		builder.setTitle(R.string.detalhe_moldura_adicionar_foto);
+		builder.setTitle(R.string.menu_detalhe_moldura_excluir);
 		AlertDialog alertDialog = builder.create();
 		alertDialog.show();
 	}
@@ -369,7 +371,7 @@ public class DetalheMolduraActivity extends Activity {
 
 	private void excluirFoto() {
 		DialogUtil.show(this, 
-				R.string.msg_titulo_detalhe_moldura_excluir, 
+				R.string.menu_detalhe_moldura_excluir, 
 				R.string.msg_descricao_detalhe_moldura_excluir, 
 				configurarPositiveButton(), android.R.string.yes, 
 				configurarNegativeButton(), android.R.string.no);
@@ -392,6 +394,8 @@ public class DetalheMolduraActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				try {
 					ComponentBoxUtil.verificaConexao(getApplicationContext());
+					Foto f = (Foto) TransferParse.getInstance().remove(foto.getObjectId());
+					System.out.println(f);
 					ToastSliding toast = new ToastSliding(DetalheMolduraActivity.this);
 					toast.show(ToastSliding.FOTO_MESSAGE, 
 							bitmapImagem, 

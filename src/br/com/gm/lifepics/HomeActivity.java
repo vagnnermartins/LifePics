@@ -1,11 +1,13 @@
 package br.com.gm.lifepics;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -27,13 +29,17 @@ import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
 import br.com.gm.lifepics.uihelper.HomeGridUIHelper;
 import br.com.gm.lifepics.uihelper.HomePolaroidUIHelper;
+import br.com.gm.lifepics.util.DialogUtil;
 import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
 import com.parse.FindCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseFacebookUtils.Permissions;
 import com.parse.ParseQuery;
 import com.parse.ParseQuery.CachePolicy;
 import com.parse.ParseUser;
@@ -45,7 +51,6 @@ public class HomeActivity extends Activity {
 	private HomePolaroidUIHelper polaroidUIHelper;
 	private HomeGridUIHelper gridUIHelper;
 	
-//	private List<Foto> minhasFotos;
 	private Map<String, Foto> minhasFotos;
 	private Map<String, Moldura> molduras;
 
@@ -123,8 +128,8 @@ public class HomeActivity extends Activity {
 				intent.putExtra(DetalheMolduraActivity.CACHE_DETALHE_MOLDURA, molduraObjectId);
 				if(foto != null){
 					foto.setMoldura(molduras.get(molduraObjectId));
-					TransferParse.getInstance().put(foto.getObjectId(), foto); 
 					intent.putExtra(molduraObjectId, foto.getObjectId());
+					TransferParse.getInstance().put(foto.getObjectId(), foto); 
 				}else{
 					TransferParse.getInstance().put(molduraObjectId, molduras.get(molduraObjectId)); 
 				}
@@ -134,24 +139,33 @@ public class HomeActivity extends Activity {
 	}
 
 	private void buscarMinhasFotos() {
-		configurarMenu(true);
-		ParseQuery<Foto> qFoto = ParseQuery.getQuery(Foto.class);
-		qFoto.whereEqualTo("usuario", ParseUser.getCurrentUser());
-		qFoto.include("moldura");
-		qFoto.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
-		qFoto.findInBackground(configurarBuscarMinhasFotosCallback());
+		if(ParseUser.getCurrentUser() != null){
+			configurarMenu(true);
+			ParseQuery<Foto> qFoto = ParseQuery.getQuery(Foto.class);
+			qFoto.whereEqualTo("usuario", ParseUser.getCurrentUser());
+			qFoto.include("moldura");
+			qFoto.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
+			qFoto.findInBackground(configurarBuscarMinhasFotosCallback());
+		}
 	}
 
 	private FindCallback<Foto> configurarBuscarMinhasFotosCallback() {
 		return new FindCallback<Foto>() {
 
 			@Override
-			public void done(List<Foto> fotos, ParseException arg1) {
-				for (Foto foto : fotos) {
-					minhasFotos.put(foto.getMoldura().getObjectId(), foto);
+			public void done(List<Foto> fotos, ParseException exception) {
+				if(exception == null){
+					minhasFotos = new HashMap<String, Foto>();
+					for (Foto foto : fotos) {
+						minhasFotos.put(foto.getMoldura().getObjectId(), foto);
+					}
+					atualizarMoldurasComFoto(SessaoUtil.recuperarValores(HomeActivity.this, 
+							Constants.ESTILO));
+				}else{
+					new com.componente.box.toast.ToastSliding(HomeActivity.this).show(com.componente.box.toast.ToastSliding.ERROR_MESSAGE, 
+							getString(R.string.msg_erro_buscar_fotos), 
+							com.componente.box.toast.ToastSliding.SLOW_MESSAGE);
 				}
-				atualizarMoldurasComFoto(SessaoUtil.recuperarValores(HomeActivity.this, 
-						Constants.ESTILO));
 			}
 		};
 	}
@@ -184,6 +198,10 @@ public class HomeActivity extends Activity {
 					container.addView(gridUIHelper.getView());
 					atualizarEstiloAtual();
 					configurarMenu(false);
+				}else{
+					new com.componente.box.toast.ToastSliding(HomeActivity.this).show(com.componente.box.toast.ToastSliding.ERROR_MESSAGE, 
+							getString(R.string.msg_erro_buscar_moldura), 
+							com.componente.box.toast.ToastSliding.SLOW_MESSAGE);
 				}
 			}
 		};
@@ -278,10 +296,22 @@ public class HomeActivity extends Activity {
 			this.menu = menu;
 			menu.clear();
 			getMenuInflater().inflate(R.menu.menu_home, menu);
+			verificarMenuLoginOuLogout();
 			verificaStatusAtualizandoMenu(menu);
 			verificaEstiloAtual();
 		}
 		return true;
+	}
+
+	private void verificarMenuLoginOuLogout() {
+		ParseUser user = ParseUser.getCurrentUser();
+		if(user == null){
+			menu.findItem(R.id.menu_home_login).setVisible(true);
+			menu.findItem(R.id.menu_home_logout).setVisible(false);
+		}else{
+			menu.findItem(R.id.menu_home_login).setVisible(false);
+			menu.findItem(R.id.menu_home_logout).setVisible(true);
+		}
 	}
 
 	private void verificaStatusAtualizandoMenu(Menu menu) {
@@ -292,6 +322,37 @@ public class HomeActivity extends Activity {
 			menu.findItem(R.id.menu_home_refresh).setVisible(true);
 			setProgressBarIndeterminateVisibility(isAtualizando);
 		}
+	}
+	
+	private LogInCallback callBackLoginFacebook() {
+		return new LogInCallback() {
+			
+			@Override
+			public void done(ParseUser user, ParseException err) {
+				setProgressBarIndeterminateVisibility(false);
+				if (user == null) {
+			    } else if (user.isNew()) {
+			    	onPrepareOptionsMenu(menu);
+			    } else {
+			    	onPrepareOptionsMenu(menu);
+			    }
+				DialogUtil.show(HomeActivity.this, R.string.bem_vindo,
+						R.string.msg_login_realizado, 
+						configurarOnPositiveButtonLogin(), 
+						android.R.string.ok, 
+						null, 0);	
+			}
+
+			private android.content.DialogInterface.OnClickListener configurarOnPositiveButtonLogin() {
+				return new android.content.DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				};
+			}
+		};
 	}
 	
 	@Override
@@ -314,14 +375,30 @@ public class HomeActivity extends Activity {
 				atualizarEstiloAtual();
 			}
 			break;
-		case R.id.menu_home_desconectar:
+		case R.id.menu_home_logout:
 			ParseUser.logOut();
 			NavegacaoUtil.navegar(this, LoginActivity.class);
 			finish();
+			break;
+		case R.id.menu_home_login:
+			login();
 			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void login() {
+		ParseFacebookUtils.logIn(
+			Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
+			this, callBackLoginFacebook());
+		setProgressBarIndeterminateVisibility(true);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	  super.onActivityResult(requestCode, resultCode, data);
+	  ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
 	}
 }

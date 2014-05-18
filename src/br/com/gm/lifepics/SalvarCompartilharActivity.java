@@ -1,12 +1,32 @@
 package br.com.gm.lifepics;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
@@ -16,19 +36,28 @@ import br.com.gm.lifepics.componente.MensagemDTO;
 import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
+import br.com.gm.lifepics.util.DialogUtil;
 import br.com.gm.lifepics.util.FacebookUtil;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.toast.ToastSliding;
 import com.facebook.Request.Callback;
 import com.facebook.Response;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseFacebookUtils.Permissions;
+import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.entity.mime.MultipartEntity;
+import com.parse.entity.mime.content.ContentBody;
+import com.parse.entity.mime.content.InputStreamBody;
+import com.parse.entity.mime.content.StringBody;
 
 public class SalvarCompartilharActivity extends Activity {
 	
+	private static final int LOGIN_FACEBOOK = 32665;
 	public static final String FOTO_SALVAR_COMPARTILHAR = "foto_salvar_compartilhar";
 	public static final String PRIMEIRA_FOTO_NA_MOLDURA = "primeira_foto_na_moldura";
 	private static final int REAUTH_ACTIVITY_CODE = 0;
@@ -48,6 +77,7 @@ public class SalvarCompartilharActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_salvar_compartilhar);
 		init();
 		carregarValores();
@@ -71,19 +101,96 @@ public class SalvarCompartilharActivity extends Activity {
 	
 	public void onSalvarCompartilhar(View view){
 		try {
-			ComponentBoxUtil.verificaConexao(this);
-			if(!primeiraFotoNaMoldura){
-				// Se atualmente ele não tem foto na current moldura eu salvo
-				salvar();
+			// Verifica se o usuário está logado
+			if(validarUsuarioLogado()){
+				ComponentBoxUtil.verificaConexao(this);
+				if(!primeiraFotoNaMoldura){
+					// Se atualmente ele não tem foto na current moldura eu salvo
+					salvar();
+				}else{
+					// Está apenas compartilhando uma foto existente
+					compartilhar();
+				}
 			}else{
-				// Está apenas compartilhando uma foto existente
-				compartilhar();
+				//Exibe mensagem caso o usuário não esteja logado
+				DialogUtil.show(this, R.string.msg_titulo_erro_salvar_sem_login, R.string.msg_descricao_erro_salvar_sem_login, 
+						configurarOnLoginFacebook(), R.string.login_facebook, 
+						configurarOnContinuarSemLogar(), R.string.nao_obrigado);
 			}
 		} catch (Exception e) {
 			new ToastSliding(this).show(ToastSliding.INFO_MESSAGE, 
 					getResources().getString(R.string.msg_sem_internet), 
 					ToastSliding.SLOW_MESSAGE);
 		}
+	}
+
+	private OnClickListener configurarOnLoginFacebook() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				ParseFacebookUtils.logIn(
+						Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
+						SalvarCompartilharActivity.this, callBackLoginFacebook());
+				dialog.dismiss();
+				setProgressBarIndeterminateVisibility(true);
+				DialogUtil.show(SalvarCompartilharActivity.this, R.string.bem_vindo,
+						R.string.msg_login_realizado, 
+						configurarOnPositiveButtonLogin(), 
+						android.R.string.ok, 
+						null, 0);	
+			}
+
+			private android.content.DialogInterface.OnClickListener configurarOnPositiveButtonLogin() {
+				return new android.content.DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						navegar();
+					}
+				};
+			}
+		};
+	}
+	
+	private LogInCallback callBackLoginFacebook() {
+		return new LogInCallback() {
+			
+			@Override
+			public void done(ParseUser user, ParseException err) {
+				setProgressBarIndeterminateVisibility(false);
+				if (user == null) {
+			    } else if (user.isNew()) {
+			    } else {
+			    }
+			}
+		};
+	}
+	
+	private void navegar() {
+		Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		finish();
+	}
+
+	private OnClickListener configurarOnContinuarSemLogar() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
+	}
+
+	private boolean validarUsuarioLogado() {
+		boolean usuarioLogado = false;
+		if(ParseUser.getCurrentUser() != null){
+			usuarioLogado = true;
+		}
+		return usuarioLogado;
 	}
 
 	private void salvar() {
@@ -112,7 +219,6 @@ public class SalvarCompartilharActivity extends Activity {
 				startActivity(intent);
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -138,6 +244,8 @@ public class SalvarCompartilharActivity extends Activity {
 		}
 		if(shareTwitter){
 			//TODO Implementar compartilhar no Twitter
+			ParseTwitterUtils.logIn(this, configurarCallbackTwitterLogin());
+			new TwitterShareTask().execute();
 		}
 		if(!shareFace && !shareTwitter){
 			//Não compartilhou e nem salvou, então finalizo a activity voltando para o DetalheMolduraActivity
@@ -148,6 +256,16 @@ public class SalvarCompartilharActivity extends Activity {
 		}
 	}
 	
+	private LogInCallback configurarCallbackTwitterLogin() {
+		return new LogInCallback() {
+			
+			@Override
+			public void done(ParseUser arg0, ParseException arg1) {
+				System.out.println(arg0);
+			}
+		};
+	}
+
 	private Callback configurarCallbackCompartilharFace() {
 		return new Callback() {
 			
@@ -291,7 +409,9 @@ public class SalvarCompartilharActivity extends Activity {
 				ParseFacebookUtils.getSession().onActivityResult(this, requestCode, resultCode, data);
 				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
 				break;
-
+			case LOGIN_FACEBOOK:
+				ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+				break;
 			default:
 				break;
 			}
@@ -321,4 +441,79 @@ public class SalvarCompartilharActivity extends Activity {
 		setResult(RESULT_FIRST_USER);
 		finish();
 	}
+	
+	class TwitterShareTask extends AsyncTask<String, Void, String> {
+
+	    @Override
+	    protected String doInBackground(String... params) {
+	        String result = "";
+	        HttpClient httpclient = new DefaultHttpClient();
+	        HttpPost request = new HttpPost("https://api.twitter.com/1.1/statuses/update_with_media.json");
+
+	        try {
+	            MultipartEntity entity = new MultipartEntity();
+	            entity.addPart("status", new StringBody(""));
+	            InputStream in = new ByteArrayInputStream(foto.getArquivo().getData());
+	            ContentBody mimePart = new InputStreamBody(in, "media.jpg");
+	            entity.addPart("media[]", mimePart);
+	            request.setEntity(entity);
+	            System.out.println(ParseTwitterUtils.getTwitter().getAuthToken());
+	            ParseTwitterUtils.getTwitter().signRequest(request);
+
+	            HttpResponse response = httpclient.execute(request, new BasicHttpContext());
+	            HttpEntity httpentity = response.getEntity();
+	            InputStream instream = httpentity.getContent();
+	 
+	            result = getStringFromInputStream(instream);
+	            System.out.println(result);
+	        } catch (ClientProtocolException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        } catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+	        return result;
+	    }
+	    
+	    private String getStringFromInputStream(InputStream is) {
+	    	 
+			BufferedReader br = null;
+			StringBuilder sb = new StringBuilder();
+	 
+			String line;
+			try {
+	 
+				br = new BufferedReader(new InputStreamReader(is));
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+				}
+	 
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+	 
+			return sb.toString();
+	 
+		}
+
+	    public void onPostExecute(String result) {
+	        try {
+	            JSONObject jObject = new JSONObject(result.trim());
+	            System.out.println(jObject);
+	        } catch (JSONException e) {
+	            e.printStackTrace();
+	        }           
+	    }
+	}
+	
 }
