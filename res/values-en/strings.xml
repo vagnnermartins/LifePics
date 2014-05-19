@@ -37,4 +37,5 @@
     <!-- Erros -->
     <string name="msg_erro_buscar_moldura">Error while loading Moldings.</string>
     <string name="msg_erro_buscar_fotos">Error while downloading Pictures.</string>
+    <string name="erro_login">It was not possible to login with facebook try again!</string>
 </resources>

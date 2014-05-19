@@ -37,5 +37,6 @@
     <!-- Erros -->
     <string name="msg_erro_buscar_moldura">Error al cargar Marcos.</string>
     <string name="msg_erro_buscar_fotos">Error al descargar Fotos.</string>
+    <string name="erro_login">No fue posible iniciar sesión con facebook vuelve a intentarlo!</string>
     
 </resources>

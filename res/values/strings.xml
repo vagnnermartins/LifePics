@@ -38,4 +38,7 @@
 
     <!-- Erros -->
     <string name="msg_sem_internet">Não foi possível encontrar uma conexão com a internet, verifque a sua conexão e tente novamente!</string>
+    <string name="erro_login">Não foi possível realizar o login com o facebook, tente novamente!</string>
+    <string name="msg_erro_buscar_moldura">Erro ao carregar as Molduras.</string>
+    <string name="msg_erro_buscar_fotos">Erro ao carregar as suas Fotos.</string>
 </resources>

@@ -54,8 +54,9 @@
                 android:id="@+id/salvar_compartilhar_descricao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="25dp"
                 android:layout_centerHorizontal="true"
+                android:text="Hello"
                 android:layout_alignBottom="@+id/salvar_compartilhar_polaroid"
                 android:gravity="center"
                  />
