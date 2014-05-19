@@ -66,7 +66,6 @@ public class HomeActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_home);
 		init();
-		atualizar();
 	}
 
 	private void atualizar() {
