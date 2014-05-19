@@ -52,6 +52,7 @@ public class DetalheMolduraActivity extends Activity {
 	private static final String PATH_TAKE_PICTURE = "path_take_picture";
 	
 	private TextView descricao;
+	private TextView titulo;
 	private ImageView imagem;
 	private ImageView polaroid;
 	private TextView ellipze;
@@ -70,6 +71,7 @@ public class DetalheMolduraActivity extends Activity {
 	private void init() {
 		configurarActionBar();
 		descricao = (TextView) findViewById(R.id.detalhe_moldura_descricao);
+		titulo = (TextView) findViewById(R.id.detalhe_moldura_titulo);
 		polaroid = (ImageView) findViewById(R.id.detalhe_moldura_polaroid);
 		imagem = (ImageView) findViewById(R.id.detalhe_moldura_imagem);
 		imagem.setOnClickListener(configurarOnImagemClickListener());
@@ -110,7 +112,8 @@ public class DetalheMolduraActivity extends Activity {
 	}
 	
 	private void carregarValores() {
-		descricao.setText("\"" + foto.getMoldura().getLegenda()+ "\"" );
+		descricao.setText(foto.getMoldura().getLegenda());
+		titulo.setText(foto.getMoldura().getTitulo());
 		polaroid.post(new Runnable() {
 			
 			@Override

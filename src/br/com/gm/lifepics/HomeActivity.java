@@ -81,6 +81,7 @@ public class HomeActivity extends Activity {
 		gridUIHelper = new HomeGridUIHelper(HomeActivity.this, configurarOnItemClickListener());
 		minhasFotos = new HashMap<String, Foto>();
 		molduras = new HashMap<String, Moldura>();
+		atualizar();
 	}
 	
 	@Override

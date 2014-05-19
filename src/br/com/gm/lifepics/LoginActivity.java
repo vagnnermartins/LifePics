@@ -11,8 +11,14 @@ import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
 
+import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
+import com.componente.box.toast.ToastSliding;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -67,10 +73,17 @@ public class LoginActivity extends Activity {
 	}
 
 	public void onClickLoginFacebook(View view){
-		findViewById(R.id.login_progress_facebook).setVisibility(View.VISIBLE);
-		ParseFacebookUtils.logIn(
-				Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
-				this, callBackLoginFacebook());
+		try {
+			ComponentBoxUtil.verificaConexao(this);
+			findViewById(R.id.login_progress_facebook).setVisibility(View.VISIBLE);
+			ParseFacebookUtils.logIn(
+					Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
+					this, callBackLoginFacebook());
+		} catch (Exception e) {
+			new ToastSliding(LoginActivity.this).show(ToastSliding.ERROR_MESSAGE, 
+					getString(R.string.msg_sem_internet), 
+					ToastSliding.SLOW_MESSAGE);
+		}
 	}
 	
 	public void onCadastrarMaisTarde(View view){
@@ -83,12 +96,18 @@ public class LoginActivity extends Activity {
 			@Override
 			public void done(ParseUser user, ParseException err) {
 				findViewById(R.id.login_progress_facebook).setVisibility(View.GONE);
-				if (user == null) {
-			    } else if (user.isNew()) {
-			    	navegar();
-			    } else {
-			    	navegar();
-			    }
+				if(err == null){
+					if (user == null) {
+					} else if (user.isNew()) {
+						navegar();
+					} else {
+						navegar();
+					}
+				}else{
+					new ToastSliding(LoginActivity.this).show(ToastSliding.ERROR_MESSAGE, 
+							getString(R.string.erro_login), 
+							ToastSliding.SLOW_MESSAGE);
+				}
 			}
 		};
 	}
