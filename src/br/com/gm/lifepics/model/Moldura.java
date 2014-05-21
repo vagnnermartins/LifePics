@@ -8,14 +8,22 @@ import com.parse.ParseObject;
 @ParseClassName("Moldura")
 public class Moldura extends ParseObject {
 	public String getLegenda() {
-		return getParseObject("frase").getString(Locale.getDefault().getLanguage());
+		String lang = Locale.getDefault().getLanguage();
+		if(!lang.equals("pt") && !lang.equals("en") && !lang.equals("es")){
+			lang = "en";
+		}
+		return getParseObject("frase").getString(lang);
 	}
 	
 	public void setLegenda(String legenda) {
 		put("legenda", legenda);
 	}
 	public String getTitulo() {
-		return getParseObject("tema").getString(Locale.getDefault().getLanguage());
+		String lang = Locale.getDefault().getLanguage();
+		if(!lang.equals("pt") && !lang.equals("en") && !lang.equals("es")){
+			lang = "en";
+		}
+		return getParseObject("tema").getString(lang);
 	}
 
 	public void setTitulo(String titulo) {

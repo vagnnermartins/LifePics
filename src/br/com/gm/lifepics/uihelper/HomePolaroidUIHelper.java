@@ -57,13 +57,12 @@ public class HomePolaroidUIHelper {
 	private void montarItemCard(Moldura current, View item, int polaroidId, int imagemId, int tituloId) {
 		final ImageView polaroid;
 		final ImageView imagem;
-		item.findViewById(R.id.item_colecao_card_polaroid_ellipze).setTag(current.getObjectId() + "ellipze");
 		TextView titulo;
 		polaroid = (ImageView) item.findViewById(polaroidId);
 		imagem = (ImageView) item.findViewById(imagemId);
 		imagem.setTag(current.getObjectId() + Constants.POLAROID);
 		titulo = (TextView) item.findViewById(tituloId);
-		titulo.setText("\"" + current.getLegenda() + "\"" );
+		titulo.setText(current.getLegenda());
 		imagem.post(new Runnable() {
 			
 			@Override

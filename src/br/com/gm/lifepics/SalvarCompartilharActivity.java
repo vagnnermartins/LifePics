@@ -30,6 +30,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import br.com.gm.lifepics.componente.ManagerMessage;
 import br.com.gm.lifepics.componente.MensagemDTO;
@@ -134,23 +135,8 @@ public class SalvarCompartilharActivity extends Activity {
 						SalvarCompartilharActivity.this, callBackLoginFacebook());
 				dialog.dismiss();
 				setProgressBarIndeterminateVisibility(true);
-				DialogUtil.show(SalvarCompartilharActivity.this, R.string.bem_vindo,
-						R.string.msg_login_realizado, 
-						configurarOnPositiveButtonLogin(), 
-						android.R.string.ok, 
-						null, 0);	
 			}
 
-			private android.content.DialogInterface.OnClickListener configurarOnPositiveButtonLogin() {
-				return new android.content.DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						navegar();
-					}
-				};
-			}
 		};
 	}
 	
@@ -161,10 +147,24 @@ public class SalvarCompartilharActivity extends Activity {
 			public void done(ParseUser user, ParseException err) {
 				setProgressBarIndeterminateVisibility(false);
 				if (user == null) {
-			    } else if (user.isNew()) {
 			    } else {
+			    	DialogUtil.show(SalvarCompartilharActivity.this, R.string.bem_vindo,
+							R.string.msg_login_realizado, 
+							configurarOnPositiveButtonLogin(), 
+							android.R.string.ok, 
+							null, 0);
 			    }
 			}
+			private android.content.DialogInterface.OnClickListener configurarOnPositiveButtonLogin() {
+				return new android.content.DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				};
+			}
+
 		};
 	}
 	
@@ -329,6 +329,8 @@ public class SalvarCompartilharActivity extends Activity {
 				imagem.setAdjustViewBounds(true);
 				imagem.setLayoutParams(params);
 				imagem.setScaleType(ScaleType.FIT_XY);
+				RelativeLayout.LayoutParams paramsDescricao = (LayoutParams) descricao.getLayoutParams();
+				paramsDescricao.width = width - marginLeft - marginRigth;
 				if(foto.getArquivo() != null){
 					new CarregarImagemAsyncTask().execute();
 				}
@@ -408,6 +410,7 @@ public class SalvarCompartilharActivity extends Activity {
 			case REAUTH_ACTIVITY_CODE:
 				ParseFacebookUtils.getSession().onActivityResult(this, requestCode, resultCode, data);
 				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
+				finish();
 				break;
 			case LOGIN_FACEBOOK:
 				ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
@@ -416,7 +419,6 @@ public class SalvarCompartilharActivity extends Activity {
 				break;
 			}
 		}
-		finish();
 	}
 	
 	@Override

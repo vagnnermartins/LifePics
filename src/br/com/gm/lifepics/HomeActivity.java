@@ -276,10 +276,6 @@ public class HomeActivity extends Activity {
 			if(imagem != null && result != null){
 				imagem.setImageBitmap(result);
 				imagem.setVisibility(View.VISIBLE);
-				View ellipze = container.findViewWithTag(foto.getMoldura().getObjectId() + "ellipze");
-				if(ellipze != null){
-					ellipze.setVisibility(View.GONE);
-				}
 			}
 		}
 	}

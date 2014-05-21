@@ -25,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import br.com.gm.lifepics.callback.Callback;
 import br.com.gm.lifepics.componente.TransferParse;
@@ -132,6 +133,8 @@ public class DetalheMolduraActivity extends Activity {
 				imagem.setAdjustViewBounds(true);
 				imagem.setLayoutParams(params);
 				imagem.setScaleType(ScaleType.FIT_XY);
+				RelativeLayout.LayoutParams paramsDescricao = (LayoutParams) descricao.getLayoutParams();
+				paramsDescricao.width = width - marginLeft - marginRigth;
 				if(foto.getCreatedAt() != null){
 					new CarregarImagemAsyncTask().execute();
 				}
@@ -190,7 +193,7 @@ public class DetalheMolduraActivity extends Activity {
 	private void exibirDialogAdicionarFoto() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setItems(R.array.adicionar_foto, onItemAdicionarFotoClickListener());
-		builder.setTitle(R.string.menu_detalhe_moldura_excluir);
+		builder.setTitle(R.string.detalhe_moldura_adicionar_foto);
 		AlertDialog alertDialog = builder.create();
 		alertDialog.show();
 	}
