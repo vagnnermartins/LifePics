@@ -20,17 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
+        android:src="@drawable/no_card"
         />
-
-    <TextView
-        android:id="@+id/item_colecao_card_polaroid_ellipze"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="..."
-        android:textColor="@color/verde_lp"
-        android:textSize="40sp"
-        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/item_colecao_card_polaroid_titulo1"
@@ -41,6 +32,7 @@
         android:layout_marginBottom="25dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:gravity="center"
         android:text="Sonho" />
 
 </RelativeLayout>

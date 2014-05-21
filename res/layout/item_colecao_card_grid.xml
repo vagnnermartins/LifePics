@@ -18,8 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="3dp"
-            android:layout_weight="1"
-             >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/item_colecao_card_grid_polaroid1"
@@ -43,7 +42,7 @@
                 android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid1"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
-                android:text="Sonho" />
+                android:gravity="center" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -78,6 +77,7 @@
                 android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
+                android:gravity="center"
                 android:text="Sonho" />
         </RelativeLayout>
 
@@ -112,7 +112,7 @@
                 android:layout_alignBottom="@+id/item_colecao_card_grid_polaroid3"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
-                android:text="Sonho" />
+                android:gravity="center" />
         </RelativeLayout>
     </LinearLayout>
 

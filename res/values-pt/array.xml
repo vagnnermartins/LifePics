@@ -3,7 +3,7 @@
 
     <string-array name="adicionar_foto">
         <item >Camera</item>
-        <item >Gallery</item>
+        <item >Galeria</item>
     </string-array>
 
 </resources>

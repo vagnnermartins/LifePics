@@ -2,43 +2,40 @@
 <resources>
 
     <string name="app_name">LifePics</string>
-    <string name="facebook_app_id">1440264786219962</string>
-    <string name="splashscreen_entrar_com_o_fb">Entrar com o Facebook</string>
-    <string name="splashscreen_cadastrar_mais_tarde">Cadastrar mais tarde</string>
+    <string name="splashscreen_entrar_com_o_fb">Enter with Facebook</string>
+    <string name="splashscreen_cadastrar_mais_tarde">Register Later</string>
     <string name="menu_home_logout">Logout</string>
     <string name="menu_home_login">Login</string>
-    <string name="bem_vindo">Bem Vindo!</string>
-    <string name="msg_login_realizado">Agora você já pode compartilhar os melhores momentos da sua vida.</string>
-
+    <string name="bem_vindo">Welcome!</string>
+    <string name="msg_login_realizado">Now you can share the best moments of your life.</string>
+    
     <!-- Inicio -->
-    <string name="msg_salvando_foto">Salvando foto...</string>
-    <string name="msg_compartilhando">Compartilhando</string>
-    <string name="msg_finalizado">Finalizado!</string>
+    <string name="msg_salvando_foto">Saving picture...</string>
+    <string name="msg_compartilhando">Sharing...</string>
+    <string name="msg_finalizado">Done!</string>
     
     <!-- Detalhe moldura -->
-    <string name="menu_detalhe_moldura_excluir">Excluir</string>
-    <string name="detalhe_moldura_adicionar_foto">Adicionar foto</string>
-    <string name="msg_descricao_detalhe_moldura_excluir">Deseja realmente deletar essa imagem?</string>
-    <string name="msg_descricao_detalhe_moldura_excluir_sucesso">Foto excluida com sucesso!</string>
-    <string name="msg_descricao_detalhe_moldura_excluindo">Excluindo foto</string>
-    <string name="msg_descricao_detalhe_moldura_erro_ecluir">Não foi possível excluir a foto, tente novamente mais tarde!</string>
-    
-    <!-- Salvar Compartilhamento -->
-    <string name="salvar_compartilhamento_salvar">Salvar</string>
-    <string name="salvar_compartilhamento_compartilhar">Compartilhar</string>
-    <string name="msg_descricao_erro_salvar">Erro ao salvar imagem no Álbum. Tente novamente!</string>
-    <string name="msg_titulo_erro_salvar_sem_login">Autenticação</string>
-    <string name="msg_descricao_erro_salvar_sem_login">Para publicar uma foto é necessário estar logado.</string>
+    <string name="menu_detalhe_moldura_excluir">Delete</string>
+    <string name="detalhe_moldura_adicionar_foto">Choose picture</string>
+    <string name="msg_descricao_detalhe_moldura_excluir">Are you sure you want to delete this picture?</string>
+    <string name="msg_descricao_detalhe_moldura_excluir_sucesso">Picture removed successfully!</string>
+    <string name="msg_descricao_detalhe_moldura_excluindo">Deleting picture</string>
+    <string name="msg_descricao_detalhe_moldura_erro_ecluir">Unable to delete the photo, try again later!</string>
     
     <!-- Botões -->
-    <string name="sim">Sim</string>
-    <string name="nao">Não</string>
+    <string name="sim">Yes</string>
+    <string name="nao">No</string>
     <string name="login_facebook">Login Facebook</string>
-    <string name="nao_obrigado">Não, obrigado!</string>
-
+    <string name="nao_obrigado">No, thanks!</string>
+    
+    <!-- Salvar Compartilhamento -->
+    <string name="salvar_compartilhamento_salvar">Save</string>
+    <string name="salvar_compartilhamento_compartilhar">Share</string>
+    <string name="msg_descricao_erro_salvar">Error while posting the picture. Try again!</string>
+    <string name="msg_descricao_erro_salvar_sem_login">You need to login to post your picture.</string>
+    
     <!-- Erros -->
-    <string name="msg_sem_internet">Não foi possível encontrar uma conexão com a internet, verifque a sua conexão e tente novamente!</string>
-    <string name="erro_login">Não foi possível realizar o login com o facebook, tente novamente!</string>
-    <string name="msg_erro_buscar_moldura">Erro ao carregar as Molduras.</string>
-    <string name="msg_erro_buscar_fotos">Erro ao carregar as suas Fotos.</string>
+    <string name="msg_erro_buscar_moldura">Error while loading Moldings.</string>
+    <string name="msg_erro_buscar_fotos">Error while downloading Pictures.</string>
+    <string name="erro_login">It was not possible to login with facebook try again!</string>
 </resources>
