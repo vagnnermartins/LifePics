@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.AsyncTask;
@@ -61,7 +62,10 @@ public class FacebookUtil {
 			byte[] retorno = null;
 			try {
 				Bitmap imagem = ComponentBoxUtil.convertByteArrayToBitmap(file.getData());
-				Bitmap mark = BitmapFactory.decodeResource(res, R.drawable.logo);
+				Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+				options.inDither = false;
+				Bitmap mark = BitmapFactory.decodeResource(res, R.drawable.logo, options);
 				int width = (int) (imagem.getWidth() / 4);
 				int height = (int) (imagem.getHeight() / 8);
 				mark = Bitmap.createScaledBitmap(mark, width, height, false);
@@ -94,7 +98,7 @@ public class FacebookUtil {
 	private static void publicarNoFacebook(byte[] file, String mensagem, Request.Callback callback) {
 		Bundle params = new Bundle();
 			params.putByteArray("source", file);
-		params.putString("message", "\"" + mensagem + "\" " + "http://goo.gl/GgII7K");
+		params.putString("message", mensagem + " http://goo.gl/GgII7K");
 		new Request(
 		    ParseFacebookUtils.getSession(),
 		    "/me/photos",

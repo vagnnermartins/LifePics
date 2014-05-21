@@ -167,13 +167,6 @@ public class SalvarCompartilharActivity extends Activity {
 
 		};
 	}
-	
-	private void navegar() {
-		Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
-		finish();
-	}
 
 	private OnClickListener configurarOnContinuarSemLogar() {
 		return new OnClickListener() {
