@@ -1,18 +1,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="7dp"
-     >
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:padding="7dp" >
 
     <ImageView
         android:id="@+id/item_colecao_card_polaroid_polaroid1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:cropToPadding="true"
-        android:src="@drawable/polaroid"
-        android:scaleType="fitXY" />
+        android:scaleType="fitXY"
+        android:src="@drawable/polaroid" />
 
     <ImageView
         android:id="@+id/item_colecao_card_polaroid_imagem1"
@@ -20,19 +21,15 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
-        android:src="@drawable/no_card"
-        />
+        android:src="@drawable/no_card" />
 
     <TextView
         android:id="@+id/item_colecao_card_polaroid_titulo1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/item_colecao_card_polaroid_polaroid1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginBottom="35dp"
         android:gravity="center"
-        android:text="Sonho" />
-
+        android:text="Sonh" />
+    
 </RelativeLayout>

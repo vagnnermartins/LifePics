@@ -1,6 +1,6 @@
 package br.com.gm.lifepics.model;
 
-import java.util.Locale;
+import br.com.gm.lifepics.util.IdiomaUtil;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
@@ -8,22 +8,14 @@ import com.parse.ParseObject;
 @ParseClassName("Moldura")
 public class Moldura extends ParseObject {
 	public String getLegenda() {
-		String lang = Locale.getDefault().getLanguage();
-		if(!lang.equals("pt") && !lang.equals("en") && !lang.equals("es")){
-			lang = "en";
-		}
-		return getParseObject("frase").getString(lang);
+		return getParseObject("frase").getString(IdiomaUtil.getDefaultLanguage());
 	}
 	
 	public void setLegenda(String legenda) {
 		put("legenda", legenda);
 	}
 	public String getTitulo() {
-		String lang = Locale.getDefault().getLanguage();
-		if(!lang.equals("pt") && !lang.equals("en") && !lang.equals("es")){
-			lang = "en";
-		}
-		return getParseObject("tema").getString(lang);
+		return getParseObject("tema").getString(IdiomaUtil.getDefaultLanguage());
 	}
 
 	public void setTitulo(String titulo) {

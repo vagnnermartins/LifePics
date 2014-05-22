@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     android:orientation="vertical"
     android:weightSum="10" >
 
@@ -54,10 +53,8 @@
                 android:id="@+id/salvar_compartilhar_descricao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="25dp"
                 android:layout_centerHorizontal="true"
-                android:text="HelloHelloHeloHe lloHelloHelloHe lloHello HoHe lloHelloHelloHe lloHello HloHe lloHelloHelloHe lloHello Hello Hello "
-                android:maxLines="2"
                 android:layout_alignBottom="@+id/salvar_compartilhar_polaroid"
                 android:gravity="center"
                  />

@@ -66,8 +66,8 @@ public class FacebookUtil {
 				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 				options.inDither = false;
 				Bitmap mark = BitmapFactory.decodeResource(res, R.drawable.logo, options);
-				int width = (int) (imagem.getWidth() / 4);
-				int height = (int) (imagem.getHeight() / 8);
+				int width = (int) ((imagem.getWidth() * 26.14)) / 100;
+				int height = (int) ((imagem.getHeight() * 7.84)) / 100;
 				mark = Bitmap.createScaledBitmap(mark, width, height, false);
 				Bitmap imagemCompartilhar = mark(imagem, mark);
 				retorno = ComponentBoxUtil.convertBitmapToBytes(imagemCompartilhar);

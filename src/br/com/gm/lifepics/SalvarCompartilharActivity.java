@@ -324,6 +324,8 @@ public class SalvarCompartilharActivity extends Activity {
 				imagem.setScaleType(ScaleType.FIT_XY);
 				RelativeLayout.LayoutParams paramsDescricao = (LayoutParams) descricao.getLayoutParams();
 				paramsDescricao.width = width - marginLeft - marginRigth;
+				paramsDescricao.leftMargin = marginLeft;
+				paramsDescricao.rightMargin = marginRigth;
 				if(foto.getArquivo() != null){
 					new CarregarImagemAsyncTask().execute();
 				}

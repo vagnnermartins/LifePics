@@ -1,7 +1,9 @@
 package br.com.gm.lifepics;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,11 +30,13 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import br.com.gm.lifepics.callback.Callback;
+import br.com.gm.lifepics.componente.ManagerMessage;
+import br.com.gm.lifepics.componente.MensagemDTO;
 import br.com.gm.lifepics.componente.TransferParse;
+import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
 import br.com.gm.lifepics.util.DialogUtil;
-import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.CropImage;
@@ -135,6 +139,8 @@ public class DetalheMolduraActivity extends Activity {
 				imagem.setScaleType(ScaleType.FIT_XY);
 				RelativeLayout.LayoutParams paramsDescricao = (LayoutParams) descricao.getLayoutParams();
 				paramsDescricao.width = width - marginLeft - marginRigth;
+				paramsDescricao.leftMargin = marginLeft;
+				paramsDescricao.rightMargin = marginRigth;
 				if(foto.getCreatedAt() != null){
 					new CarregarImagemAsyncTask().execute();
 				}
@@ -262,7 +268,7 @@ public class DetalheMolduraActivity extends Activity {
 						if(data != null){
 							buscarImagemNaGaleria(data);
 							String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-							CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 300, 300);
+							CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -270,7 +276,7 @@ public class DetalheMolduraActivity extends Activity {
 					break;
 				case RESULT_TAKE_IMAGE:
 					String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-					CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 300, 300);
+					CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
 					break;
 				case CropImage.CROP_IMAGE:
 					try {
@@ -309,12 +315,47 @@ public class DetalheMolduraActivity extends Activity {
 	private void cropImage(Intent data) throws ParseException {
 		Bundle extras = data.getExtras();
 		if (extras != null) {
-			Bitmap photo = extras.getParcelable("data");
-			imagem.setImageBitmap(photo);
-			new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
-			ellipze.setVisibility(View.GONE);
+			
+			try {
+				String pathImageFile = SessaoUtil.recuperarValores(this, CropImage.PATH_IMAGE_CROP);
+				File image = new File(pathImageFile);
+				Bitmap photo = ComponentBoxUtil.convertByteArrayToBitmap(readBytesFromFile(image));
+				imagem.setImageBitmap(photo);
+				new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
+				ellipze.setVisibility(View.GONE);
+				if(image.exists()){
+					image.delete();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
+	
+	@SuppressWarnings("resource")
+	public static byte[] readBytesFromFile(File file) throws Exception {
+	      InputStream is = new FileInputStream(file);
+	      
+	      long length = file.length();
+	  
+	      if (length > Integer.MAX_VALUE) {
+	        throw new Exception();
+	      }
+	  
+	      byte[] bytes = new byte[(int)length];
+	  
+	      int offset = 0;
+	      int numRead = 0;
+	      while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+	          offset += numRead;
+	      }
+	  
+	      if (offset < bytes.length) {
+	          throw new IOException("Could not completely read file " + file.getName());
+	      }
+	      is.close();
+	      return bytes;
+	  }
 	
 	private Callback configurarOnCriarNovaImagemCallback() {
 		return new Callback() {
@@ -400,15 +441,15 @@ public class DetalheMolduraActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				try {
 					ComponentBoxUtil.verificaConexao(getApplicationContext());
-					Foto f = (Foto) TransferParse.getInstance().remove(foto.getObjectId());
-					System.out.println(f);
-					ToastSliding toast = new ToastSliding(DetalheMolduraActivity.this);
-					toast.show(ToastSliding.FOTO_MESSAGE, 
-							bitmapImagem, 
-							R.string.msg_descricao_detalhe_moldura_excluindo);
+					MensagemDTO mensagem = new MensagemDTO(
+							ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+							R.string.msg_descricao_detalhe_moldura_excluindo, 
+							Constants.STATUS_PENDENTE);
+					ManagerMessage.getInstance().put(Constants.MENSAGEM_TOAST, mensagem);
 					imagem.setImageResource(android.R.color.transparent);
 					ellipze.setVisibility(View.VISIBLE);
-					foto.deleteEventually(configurarDeleteCallback(toast));
+					foto.deleteEventually(configurarDeleteCallback(mensagem));
+					finish();
 				} catch (Exception e) {
 					new com.componente.box.toast.ToastSliding(DetalheMolduraActivity.this).show(com.componente.box.toast.ToastSliding.INFO_MESSAGE, 
 							getResources().getString(R.string.msg_sem_internet), 
@@ -416,17 +457,14 @@ public class DetalheMolduraActivity extends Activity {
 				}
 			}
 
-			private DeleteCallback configurarDeleteCallback(final ToastSliding toast) {
+			private DeleteCallback configurarDeleteCallback(final MensagemDTO mensagem) {
 				return new DeleteCallback() {
 					
 					@Override
 					public void done(ParseException exception) {
 						if(exception == null){
-							toast.alterarMensagem(R.string.msg_descricao_detalhe_moldura_excluir_sucesso);
-						}else{
-							toast.alterarMensagem(R.string.msg_descricao_detalhe_moldura_erro_ecluir, R.drawable.ic_delete);
+							mensagem.getCallback().onReturn(null);
 						}
-						toast.removerToast(ToastSliding.SLOW_MESSAGE);
 					}
 				};
 			}

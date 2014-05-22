@@ -26,8 +26,8 @@ public class HomePolaroidUIHelper {
 		this.activity = activity;
 		this.view = new LinearLayout(activity);
 		view.setOrientation(LinearLayout.VERTICAL);
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		view.setLayoutParams(params);
+//		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+//		view.setLayoutParams(params);
 		this.onClickListener = onClickListener;
 	}
 	
@@ -57,7 +57,7 @@ public class HomePolaroidUIHelper {
 	private void montarItemCard(Moldura current, View item, int polaroidId, int imagemId, int tituloId) {
 		final ImageView polaroid;
 		final ImageView imagem;
-		TextView titulo;
+		final TextView titulo;
 		polaroid = (ImageView) item.findViewById(polaroidId);
 		imagem = (ImageView) item.findViewById(imagemId);
 		imagem.setTag(current.getObjectId() + Constants.POLAROID);
@@ -81,6 +81,10 @@ public class HomePolaroidUIHelper {
 				imagem.setAdjustViewBounds(true);
 				imagem.setLayoutParams(params);
 				imagem.setScaleType(ScaleType.FIT_XY);
+				RelativeLayout.LayoutParams paramsDescricao = (android.widget.RelativeLayout.LayoutParams) titulo.getLayoutParams();
+				paramsDescricao.width = width - marginLeft - marginRigth;
+				paramsDescricao.leftMargin = marginLeft;
+				paramsDescricao.rightMargin = marginRigth;
 			}
 		});
 	}

@@ -8,23 +8,19 @@ import android.os.Bundle;
 import android.view.View;
 import br.com.gm.lifepics.componente.TransferParse;
 import br.com.gm.lifepics.constants.Constants;
-import br.com.gm.lifepics.model.Foto;
-import br.com.gm.lifepics.model.Moldura;
+import br.com.gm.lifepics.util.IdiomaUtil;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
 import com.componente.box.toast.ToastSliding;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
-import com.parse.Parse;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
+import com.parse.PushService;
 import com.parse.ParseFacebookUtils.Permissions;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
@@ -38,24 +34,6 @@ public class LoginActivity extends Activity {
 	}
 
 	private void init() {
-//		PackageInfo info;
-//		try {
-//		    info = getPackageManager().getPackageInfo("br.com.gm.lifepics", PackageManager.GET_SIGNATURES);
-//		    for (Signature signature : info.signatures) {
-//		        MessageDigest md;
-//		        md = MessageDigest.getInstance("SHA");
-//		        md.update(signature.toByteArray());
-//		        String something = new String(Base64.encode(md.digest(), 0));
-//		        //String something = new String(Base64.encodeBytes(md.digest()));
-//		        Log.e("hash key", something);
-//		    }
-//		} catch (NameNotFoundException e1) {
-//		    Log.e("name not found", e1.toString());
-//		} catch (NoSuchAlgorithmException e) {
-//		    Log.e("no such an algorithm", e.toString());
-//		} catch (Exception e) {
-//		    Log.e("exception", e.toString());
-//		}
 		initParse();
 		if(ParseUser.getCurrentUser() != null){
 			navegar();
@@ -98,9 +76,10 @@ public class LoginActivity extends Activity {
 				findViewById(R.id.login_progress_facebook).setVisibility(View.GONE);
 				if(err == null){
 					if (user == null) {
-					} else if (user.isNew()) {
-						navegar();
 					} else {
+						ParseInstallation parseInstalation = ParseInstallation.getCurrentInstallation();
+						parseInstalation.put("user", user);
+						parseInstalation.saveEventually();
 						navegar();
 					}
 				}else{
@@ -118,13 +97,12 @@ public class LoginActivity extends Activity {
 	}
 
 	private void initParse() {
-		try {
-			ParseObject.registerSubclass(Moldura.class);
-			ParseObject.registerSubclass(Foto.class);
-			Parse.initialize(LoginActivity.this, Constants.PARSE_APP_ID, Constants.PARSE_CLIENT_KEY);
-			ParseFacebookUtils.initialize(Constants.FACEBOOK_APP_ID);
-		} catch (Exception e) {
-		}
+		PushService.setDefaultPushCallback(getApplicationContext(), LoginActivity.class);
+		ParseAnalytics.trackAppOpened(getIntent());
+		ParseInstallation parseInstalation = ParseInstallation.getCurrentInstallation();
+		parseInstalation.put("idioma", IdiomaUtil.getDefaultLanguage());
+		parseInstalation.saveEventually();
+		ParseFacebookUtils.initialize(Constants.FACEBOOK_APP_ID);
 	}
 	
 	@Override

@@ -373,11 +373,10 @@ public class HomeActivity extends Activity {
 			break;
 		case R.id.menu_home_logout:
 			ParseUser.logOut();
-			NavegacaoUtil.navegar(this, LoginActivity.class);
-			finish();
+			finalizar();
 			break;
 		case R.id.menu_home_login:
-			login();
+			finalizar();
 			break;
 		default:
 			break;
@@ -385,11 +384,9 @@ public class HomeActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void login() {
-		ParseFacebookUtils.logIn(
-			Arrays.asList(Permissions.User.ABOUT_ME, Permissions.User.BIRTHDAY, Permissions.User.RELATIONSHIPS),
-			this, callBackLoginFacebook());
-		setProgressBarIndeterminateVisibility(true);
+	private void finalizar() {
+		NavegacaoUtil.navegar(this, LoginActivity.class);
+		finish();
 	}
 	
 	@Override
