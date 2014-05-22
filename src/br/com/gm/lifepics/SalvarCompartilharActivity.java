@@ -45,6 +45,7 @@ import com.componente.box.toast.ToastSliding;
 import com.facebook.Request.Callback;
 import com.facebook.Response;
 import com.parse.LogInCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFacebookUtils.Permissions;
@@ -110,7 +111,15 @@ public class SalvarCompartilharActivity extends Activity {
 					salvar();
 				}else{
 					// Está apenas compartilhando uma foto existente
-					compartilhar();
+					Boolean shareFace = Boolean.valueOf((String)findViewById(R.id.salvar_compartilhar_facebook).getTag());
+					if(shareFace){
+						compartilhar();
+					}else{
+						DialogUtil.show(this, 
+								android.R.string.dialog_alert_title,
+								R.string.msg_selecione_ao_menos_compartilhamento, 
+								configurarOnMensagemCompartilhamentoPositiveButton(), android.R.string.ok, null, 0);
+					}
 				}
 			}else{
 				//Exibe mensagem caso o usuário não esteja logado
@@ -123,6 +132,16 @@ public class SalvarCompartilharActivity extends Activity {
 					getResources().getString(R.string.msg_sem_internet), 
 					ToastSliding.SLOW_MESSAGE);
 		}
+	}
+
+	private OnClickListener configurarOnMensagemCompartilhamentoPositiveButton() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
 	}
 
 	private OnClickListener configurarOnLoginFacebook() {
@@ -189,6 +208,7 @@ public class SalvarCompartilharActivity extends Activity {
 	private void salvar() {
 		exibirMensagem(R.string.msg_salvando_foto);
 		foto.setUsuario(ParseUser.getCurrentUser());
+		foto.setACL(new ParseACL(ParseUser.getCurrentUser()));
 		foto.saveInBackground(configurarSaveFotoCallback());
 	}
 
@@ -326,6 +346,7 @@ public class SalvarCompartilharActivity extends Activity {
 				paramsDescricao.width = width - marginLeft - marginRigth;
 				paramsDescricao.leftMargin = marginLeft;
 				paramsDescricao.rightMargin = marginRigth;
+				paramsDescricao.bottomMargin = (int) (height / 15.36);
 				if(foto.getArquivo() != null){
 					new CarregarImagemAsyncTask().execute();
 				}

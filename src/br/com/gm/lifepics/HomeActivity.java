@@ -1,13 +1,11 @@
 package br.com.gm.lifepics;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -29,17 +27,14 @@ import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
 import br.com.gm.lifepics.uihelper.HomeGridUIHelper;
 import br.com.gm.lifepics.uihelper.HomePolaroidUIHelper;
-import br.com.gm.lifepics.util.DialogUtil;
 import br.com.gm.lifepics.util.ToastSliding;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
 import com.componente.box.localizacao.util.NavegacaoUtil;
 import com.componente.box.localizacao.util.SessaoUtil;
 import com.parse.FindCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseFacebookUtils.Permissions;
 import com.parse.ParseQuery;
 import com.parse.ParseQuery.CachePolicy;
 import com.parse.ParseUser;
@@ -318,37 +313,6 @@ public class HomeActivity extends Activity {
 			menu.findItem(R.id.menu_home_refresh).setVisible(true);
 			setProgressBarIndeterminateVisibility(isAtualizando);
 		}
-	}
-	
-	private LogInCallback callBackLoginFacebook() {
-		return new LogInCallback() {
-			
-			@Override
-			public void done(ParseUser user, ParseException err) {
-				setProgressBarIndeterminateVisibility(false);
-				if (user == null) {
-			    } else if (user.isNew()) {
-			    	onPrepareOptionsMenu(menu);
-			    } else {
-			    	onPrepareOptionsMenu(menu);
-			    }
-				DialogUtil.show(HomeActivity.this, R.string.bem_vindo,
-						R.string.msg_login_realizado, 
-						configurarOnPositiveButtonLogin(), 
-						android.R.string.ok, 
-						null, 0);	
-			}
-
-			private android.content.DialogInterface.OnClickListener configurarOnPositiveButtonLogin() {
-				return new android.content.DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				};
-			}
-		};
 	}
 	
 	@Override

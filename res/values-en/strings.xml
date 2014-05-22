@@ -21,6 +21,7 @@
     <string name="msg_descricao_detalhe_moldura_excluir_sucesso">Picture removed successfully!</string>
     <string name="msg_descricao_detalhe_moldura_excluindo">Deleting picture</string>
     <string name="msg_descricao_detalhe_moldura_erro_ecluir">Unable to delete the photo, try again later!</string>
+    <string name="msg_selecione_ao_menos_compartilhamento">Select at least one means of sharing.</string>
     
     <!-- Botões -->
     <string name="sim">Yes</string>

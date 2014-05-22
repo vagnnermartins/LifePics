@@ -1,9 +1,7 @@
 package br.com.gm.lifepics;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -182,9 +180,30 @@ public class DetalheMolduraActivity extends Activity {
 		
 		@Override
 		protected Void doInBackground(Void... params) {
-			String imageFileName = "JPEG_" + DataUtil.transformDateToSting(new Date(), "dd_MM_yyyy_HH_mm_ss") + "_.jpg";
+			String imageFileName = getNameImage(foto.getMoldura().getTitulo()) + ".jpg";
 			foto.setArquivo(new ParseFile(imageFileName, ComponentBoxUtil.convertBitmapToBytes(bitmap)));
 			return null;
+		}
+		
+		private String getNameImage(String nome){
+			return ((String)nome)  
+				    .replaceAll("[ãâàáä]",  "a")  
+				    .replaceAll("[êèéë&]",  "e")  
+				    .replaceAll("[îìíï]",   "i")  
+				    .replaceAll("[õôòóö]",  "o")  
+				    .replaceAll("[ûúùü]",   "u")  
+				    .replaceAll("[ÃÂÀÁÄ]",  "A")  
+				    .replaceAll("[ÊÈÉË]",   "E")  
+				    .replaceAll("[ÎÌÍÏ]",   "I")  
+				    .replaceAll("[ÕÔÒÓÖ]",  "O")  
+				    .replaceAll("[ÛÙÚÜ]",   "U")  
+				                      
+				    .replace('ç',   'c')  
+				    .replace('Ç',   'C')  
+				    .replace('ñ',   'n')  
+				    .replace('Ñ',   'N')  
+				                      
+				    .replaceAll("[^a-zA-Z]", " ");
 		}
 		
 		@Override
@@ -319,7 +338,7 @@ public class DetalheMolduraActivity extends Activity {
 			try {
 				String pathImageFile = SessaoUtil.recuperarValores(this, CropImage.PATH_IMAGE_CROP);
 				File image = new File(pathImageFile);
-				Bitmap photo = ComponentBoxUtil.convertByteArrayToBitmap(readBytesFromFile(image));
+				Bitmap photo = ComponentBoxUtil.convertByteArrayToBitmap(ComponentBoxUtil.readBytesFromFile(image));
 				imagem.setImageBitmap(photo);
 				new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
 				ellipze.setVisibility(View.GONE);
@@ -331,31 +350,6 @@ public class DetalheMolduraActivity extends Activity {
 			}
 		}
 	}
-	
-	@SuppressWarnings("resource")
-	public static byte[] readBytesFromFile(File file) throws Exception {
-	      InputStream is = new FileInputStream(file);
-	      
-	      long length = file.length();
-	  
-	      if (length > Integer.MAX_VALUE) {
-	        throw new Exception();
-	      }
-	  
-	      byte[] bytes = new byte[(int)length];
-	  
-	      int offset = 0;
-	      int numRead = 0;
-	      while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-	          offset += numRead;
-	      }
-	  
-	      if (offset < bytes.length) {
-	          throw new IOException("Could not completely read file " + file.getName());
-	      }
-	      is.close();
-	      return bytes;
-	  }
 	
 	private Callback configurarOnCriarNovaImagemCallback() {
 		return new Callback() {
