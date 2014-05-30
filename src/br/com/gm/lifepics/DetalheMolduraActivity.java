@@ -28,12 +28,11 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import br.com.gm.lifepics.callback.Callback;
-import br.com.gm.lifepics.componente.ManagerMessage;
 import br.com.gm.lifepics.componente.MensagemDTO;
 import br.com.gm.lifepics.componente.TransferParse;
-import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
 import br.com.gm.lifepics.model.Moldura;
+import br.com.gm.lifepics.util.CustomToastSliding;
 import br.com.gm.lifepics.util.DialogUtil;
 
 import com.componente.box.localizacao.util.ComponentBoxUtil;
@@ -69,6 +68,18 @@ public class DetalheMolduraActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detalhe_moldura);
 		init();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		((LifePicsApplication)getApplicationContext()).setCurrentActivity(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		((LifePicsApplication)getApplicationContext()).setCurrentActivity(null);
 	}
 
 	private void init() {
@@ -281,32 +292,32 @@ public class DetalheMolduraActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode == RESULT_OK){
-				switch (requestCode) {
-				case RESULT_LOAD_IMAGE:
-					try {
-						if(data != null){
-							buscarImagemNaGaleria(data);
-							String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-							CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+			switch (requestCode) {
+			case RESULT_LOAD_IMAGE:
+				try {
+					if(data != null){
+						buscarImagemNaGaleria(data);
+						String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
+						CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
 					}
-					break;
-				case RESULT_TAKE_IMAGE:
-					String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
-					CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
-					break;
-				case CropImage.CROP_IMAGE:
-					try {
-						cropImage(data);
-						if(foto.getCreatedAt() != null){
-							primeiraFotoNaMoldura = false;
-						}
-					} catch (ParseException e) {
-					}
-					break;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				break;
+			case RESULT_TAKE_IMAGE:
+				String pathImage = SessaoUtil.recuperarValores(getApplicationContext(), PATH_TAKE_PICTURE);
+				CropImage.doCrop(DetalheMolduraActivity.this, Uri.fromFile(new File(pathImage)), 512, 512);
+				break;
+			case CropImage.CROP_IMAGE:
+				try {
+					cropImage(data);
+					if(foto.getCreatedAt() != null){
+						primeiraFotoNaMoldura = false;
+					}
+				} catch (ParseException e) {
+				}
+				break;
+			}
 		} else if(resultCode == RESULT_FIRST_USER){
 			if(primeiraFotoNaMoldura || foto.getCreatedAt() != null){
 				imagem.setImageBitmap(bitmapImagem);
@@ -332,22 +343,18 @@ public class DetalheMolduraActivity extends Activity {
 	}
 	
 	private void cropImage(Intent data) throws ParseException {
-		Bundle extras = data.getExtras();
-		if (extras != null) {
-			
-			try {
-				String pathImageFile = SessaoUtil.recuperarValores(this, CropImage.PATH_IMAGE_CROP);
-				File image = new File(pathImageFile);
-				Bitmap photo = ComponentBoxUtil.convertByteArrayToBitmap(ComponentBoxUtil.readBytesFromFile(image));
-				imagem.setImageBitmap(photo);
-				new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
-				ellipze.setVisibility(View.GONE);
-				if(image.exists()){
-					image.delete();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			String pathImageFile = SessaoUtil.recuperarValores(this, CropImage.PATH_IMAGE_CROP);
+			File image = new File(pathImageFile);
+			Bitmap photo = ComponentBoxUtil.convertByteArrayToBitmap(ComponentBoxUtil.readBytesFromFile(image));
+			imagem.setImageBitmap(photo);
+			new CriarNovaImagemParseFileAsyncTask(photo, configurarOnCriarNovaImagemCallback()).execute();
+			ellipze.setVisibility(View.GONE);
+			if(image.exists()){
+				image.delete();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -436,14 +443,17 @@ public class DetalheMolduraActivity extends Activity {
 				try {
 					ComponentBoxUtil.verificaConexao(getApplicationContext());
 					MensagemDTO mensagem = new MensagemDTO(
-							ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+							CustomToastSliding.FOTO_MESSAGE,
 							R.string.msg_descricao_detalhe_moldura_excluindo, 
-							Constants.STATUS_PENDENTE);
-					ManagerMessage.getInstance().put(Constants.MENSAGEM_TOAST, mensagem);
+							ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+							CustomToastSliding.INDETERMINADO);
 					imagem.setImageResource(android.R.color.transparent);
 					ellipze.setVisibility(View.VISIBLE);
-					foto.deleteEventually(configurarDeleteCallback(mensagem));
-					finish();
+					foto.deleteEventually(configurarDeleteCallback());
+					((LifePicsApplication) getApplicationContext()).adicionarMensagem(mensagem);
+					Intent intent = new Intent(DetalheMolduraActivity.this, HomeActivity.class); 
+					intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					startActivity(intent);
 				} catch (Exception e) {
 					new com.componente.box.toast.ToastSliding(DetalheMolduraActivity.this).show(com.componente.box.toast.ToastSliding.INFO_MESSAGE, 
 							getResources().getString(R.string.msg_sem_internet), 
@@ -451,14 +461,20 @@ public class DetalheMolduraActivity extends Activity {
 				}
 			}
 
-			private DeleteCallback configurarDeleteCallback(final MensagemDTO mensagem) {
+			private DeleteCallback configurarDeleteCallback() {
 				return new DeleteCallback() {
 					
 					@Override
 					public void done(ParseException exception) {
+						LifePicsApplication application = (LifePicsApplication) getApplicationContext();
 						if(exception == null){
-							mensagem.getCallback().onReturn(null);
+							application.dismissMessage(R.string.msg_descricao_detalhe_moldura_excluir_sucesso, 
+										CustomToastSliding.SLOW_MESSAGE);
+						}else{
+							application.dismissMessage(R.string.msg_descricao_detalhe_moldura_erro_ecluir, 
+									CustomToastSliding.SLOW_MESSAGE);
 						}
+						finish();
 					}
 				};
 			}

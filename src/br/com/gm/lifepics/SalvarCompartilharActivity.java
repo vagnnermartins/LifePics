@@ -32,11 +32,10 @@ import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-import br.com.gm.lifepics.componente.ManagerMessage;
 import br.com.gm.lifepics.componente.MensagemDTO;
 import br.com.gm.lifepics.componente.TransferParse;
-import br.com.gm.lifepics.constants.Constants;
 import br.com.gm.lifepics.model.Foto;
+import br.com.gm.lifepics.util.CustomToastSliding;
 import br.com.gm.lifepics.util.DialogUtil;
 import br.com.gm.lifepics.util.FacebookUtil;
 
@@ -72,7 +71,7 @@ public class SalvarCompartilharActivity extends Activity {
 	private ImageView imagem;
 	private TextView descricao;
 	
-	private MensagemDTO mensagem;
+//	private MensagemDTO mensagem;
 	
 	private boolean currentActivity;
 	
@@ -218,34 +217,40 @@ public class SalvarCompartilharActivity extends Activity {
 	 */
 	private void exibirMensagem(int resMensagem) {
 		try {
-			mensagem = new MensagemDTO(
-					ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
-					resMensagem, 
-					Constants.STATUS_PENDENTE);
-			ManagerMessage.getInstance().put(Constants.MENSAGEM_TOAST, mensagem);
+			LifePicsApplication application = (LifePicsApplication) getApplicationContext();
+			MensagemDTO mensagem = new MensagemDTO(CustomToastSliding.FOTO_MESSAGE, 
+					resMensagem, ComponentBoxUtil.convertByteArrayToBitmap(foto.getArquivo().getData()), 
+					CustomToastSliding.INDETERMINADO);
 			/**
 			 * Verifica se está na Current Activity, caso esteja redireciona para a Home
 			 */
 			if(currentActivity){
+				application.adicionarMensagem(mensagem);
 				Intent intent = new Intent(SalvarCompartilharActivity.this, HomeActivity.class); 
 				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 				startActivity(intent);
+			}else{
+				/**
+				 * Senão exibi a mensagem na Current Activity 
+				 */
+				application.showMessage(mensagem);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		currentActivity = true;
+		((LifePicsApplication)getApplicationContext()).setCurrentActivity(this);
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		currentActivity = false;
-	}
-	
-	@Override
-	public void onResume() {
-	    super.onResume();
-	    currentActivity = true;
+		((LifePicsApplication)getApplicationContext()).setCurrentActivity(null);
 	}
 
 	private void compartilhar() {
@@ -284,10 +289,11 @@ public class SalvarCompartilharActivity extends Activity {
 			
 			@Override
 			public void onCompleted(Response response) {
-				if(mensagem.getCallback() != null){
-					mensagem.getCallback().onReturn(null);
+				LifePicsApplication application = (LifePicsApplication) getApplicationContext();
+				if(response.getError() == null){
+					application.dismissMessage(R.string.msg_finalizado, CustomToastSliding.SLOW_MESSAGE);
 				}else{
-					ManagerMessage.getInstance().get(Constants.MENSAGEM_TOAST).setStatus(Constants.STATUS_EXIBIDA);
+					application.dismissMessage(R.string.msg_descricao_erro_compartilhar, CustomToastSliding.SLOW_MESSAGE);
 				}
 				finish();
 			}
@@ -299,15 +305,12 @@ public class SalvarCompartilharActivity extends Activity {
 			
 			@Override
 			public void done(ParseException exception) {
+				LifePicsApplication application = (LifePicsApplication) getApplicationContext();
 				if(exception == null){
-					mensagem.getCallback().onReturn(null);
+					application.dismissMessage(R.string.msg_finalizado, CustomToastSliding.SLOW_MESSAGE);
 					compartilhar();
 				}else{
-					/**
-					 * Se não foi possível salvar enviar mensagem de erro
-					 */
-					mensagem.setMensagem(R.string.msg_descricao_erro_salvar);
-					mensagem.getCallback().onReturn(null);
+					application.dismissMessage(R.string.msg_descricao_erro_salvar, CustomToastSliding.SLOW_MESSAGE);
 				}
 			}
 		};

@@ -1,25 +1,29 @@
 package br.com.gm.lifepics.componente;
 
-import br.com.gm.lifepics.callback.Callback;
+import java.io.Serializable;
+
 import android.graphics.Bitmap;
 
-public class MensagemDTO {
-
-	private Bitmap imagem;
+@SuppressWarnings("serial")
+public class MensagemDTO implements Serializable{
+	
+	private int tipoMensagem;
 	private int mensagem;
-	private String status;
-	private Callback callback;
-	public MensagemDTO(Bitmap imagem, int mensagem, String status) {
+	private Bitmap leftImage;
+	private Integer time;
+	public MensagemDTO(int tipoMensagem, int mensagem, Bitmap leftImage,
+			Integer time) {
 		super();
-		this.imagem = imagem;
+		this.tipoMensagem = tipoMensagem;
 		this.mensagem = mensagem;
-		this.status = status;
+		this.leftImage = leftImage;
+		this.time = time;
 	}
-	public Bitmap getImagem() {
-		return imagem;
+	public int getTipoMensagem() {
+		return tipoMensagem;
 	}
-	public void setImagem(Bitmap imagem) {
-		this.imagem = imagem;
+	public void setTipoMensagem(int tipoMensagem) {
+		this.tipoMensagem = tipoMensagem;
 	}
 	public int getMensagem() {
 		return mensagem;
@@ -27,16 +31,16 @@ public class MensagemDTO {
 	public void setMensagem(int mensagem) {
 		this.mensagem = mensagem;
 	}
-	public Callback getCallback() {
-		return callback;
+	public Bitmap getLeftImage() {
+		return leftImage;
 	}
-	public void setCallback(Callback callback) {
-		this.callback = callback;
+	public void setLeftImage(Bitmap leftImage) {
+		this.leftImage = leftImage;
 	}
-	public String getStatus() {
-		return status;
+	public Integer getTime() {
+		return time;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setTime(Integer time) {
+		this.time = time;
 	}
 }

@@ -34,6 +34,7 @@
     <string name="salvar_compartilhamento_compartilhar">Compartir</string>
     <string name="msg_descricao_erro_salvar">Error al gravar foto. Inténtalo de nuevo!</string>
     <string name="msg_descricao_erro_salvar_sem_login">Para publicar una foto es necesario hacer login.</string>
+    <string name="msg_descricao_erro_compartilhar">Error al compartir con Facebook.</string>
     
     <!-- Erros -->
     <string name="msg_erro_buscar_moldura">Error al cargar Marcos.</string>

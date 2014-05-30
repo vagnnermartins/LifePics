@@ -34,6 +34,7 @@
     <string name="salvar_compartilhamento_compartilhar">Share</string>
     <string name="msg_descricao_erro_salvar">Error while posting the picture. Try again!</string>
     <string name="msg_descricao_erro_salvar_sem_login">You need to login to post your picture.</string>
+    <string name="msg_descricao_erro_compartilhar">Error while sharing on Facebook.</string>
     
     <!-- Erros -->
     <string name="msg_erro_buscar_moldura">Error while loading Moldings.</string>

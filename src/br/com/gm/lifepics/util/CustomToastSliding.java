@@ -4,7 +4,6 @@ import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.gm.lifepics.R;
+import br.com.gm.lifepics.componente.MensagemDTO;
 
-public class ToastSliding extends RelativeLayout {
+@SuppressLint("ViewConstructor")
+public class CustomToastSliding extends RelativeLayout {
 	
 	private ImageView imagem;
 	private TextView texto;
@@ -24,9 +25,12 @@ public class ToastSliding extends RelativeLayout {
 	private View view;
 	private Context context;
 	private FrameLayout viewRoot;
+	private MensagemDTO mensagem;
 	public static final int LONG_MESSAGE = 10000;
 	public static final int SLOW_MESSAGE = 4000;
 	public static final int FAST_MESSAGE = 2000;
+	public static final int INDETERMINADO = -1;
+	public static final int NOW = 0;
 
 	public static final int INFO_MESSAGE = 1;
 	public static final int WARNNING_MESSAGE = 2;
@@ -35,9 +39,10 @@ public class ToastSliding extends RelativeLayout {
 	public static final int FOTO_MESSAGE = 5;
 	
 
-	public ToastSliding(Context context) {
+	public CustomToastSliding(Context context, MensagemDTO mensagem) {
 		super(context);
 		this.context = context;
+		this.mensagem = mensagem;
 		init();
 	}
 	
@@ -56,10 +61,17 @@ public class ToastSliding extends RelativeLayout {
 		LayoutTransition transition = new LayoutTransition();
 		setLayoutTransition(transition);
 		
-		carregarComponentes();
+		initComponentes();
+		carregarMensagem(mensagem);
+	}
+	
+	public void carregarMensagem(MensagemDTO mensagem){
+		imagem.setImageBitmap(mensagem.getLeftImage());
+		texto.setText(mensagem.getMensagem());
+		configurarTipoMensagem(mensagem.getTipoMensagem());
 	}
 
-	private void carregarComponentes() {
+	private void initComponentes() {
 		texto = (TextView)view.findViewById(R.id.toast_lp_texto_msgs);
 		btnFechar = (ImageView)view.findViewById(R.id.toast_lp_btn_status);
 		imagem = (ImageView)view.findViewById(R.id.toast_lp_img_msgs);
@@ -75,21 +87,17 @@ public class ToastSliding extends RelativeLayout {
 		});
 	}
 	
-	public void show(int tipo, Bitmap bitmap, int mensagem){
+	public void show(){
 		this.removeAllViews();
-		imagem.setImageBitmap(bitmap);
-		texto.setText(mensagem);
-		configurarTipoMensagem(tipo);
+		viewRoot.removeView(view);
 		viewRoot.addView(view);
+		if(mensagem.getTime() != INDETERMINADO){
+			removerToast(mensagem.getTime());
+		}
 	}
 	
 	public void alterarMensagem(int mensagem){
 		texto.setText(mensagem);
-	}
-	
-	public void alterarMensagem(int mensagem, int imageResourceBtnFechar){
-		texto.setText(mensagem);
-		btnFechar.setImageResource(imageResourceBtnFechar);
 	}
 	
 	public void removerToast(int time){

@@ -30,6 +30,7 @@
     <string name="msg_titulo_erro_salvar_sem_login">Autenticação</string>
     <string name="msg_descricao_erro_salvar_sem_login">Para publicar uma foto é necessário estar logado.</string>
     <string name="msg_selecione_ao_menos_compartilhamento">Selecione ao menos um meio de compartilhamento.</string>
+    <string name="msg_descricao_erro_compartilhar">Erro ao compartilhar no Facebook.</string>
     
     <!-- Botões -->
     <string name="sim">Sim</string>
