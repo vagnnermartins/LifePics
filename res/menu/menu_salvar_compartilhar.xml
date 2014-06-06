@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+   <item
+       android:id="@+id/menu_salvar_compartilhar_polaroid"
+       android:icon="@drawable/ic_polaroid"
+       android:orderInCategory="100"
+       android:showAsAction="withText|always"
+       android:visible="false"/>
+   <item
+       android:id="@+id/menu_salvar_compartilhar_foto"
+       android:icon="@drawable/ic_picture"
+       android:orderInCategory="100"
+       android:showAsAction="withText|always"/>
+
+</menu>
