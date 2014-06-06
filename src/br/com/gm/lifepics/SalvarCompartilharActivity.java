@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -71,9 +72,8 @@ public class SalvarCompartilharActivity extends Activity {
 	private ImageView imagem;
 	private TextView descricao;
 	
-//	private MensagemDTO mensagem;
-	
 	private boolean currentActivity;
+	private Menu menu;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -258,7 +258,7 @@ public class SalvarCompartilharActivity extends Activity {
 		Boolean shareTwitter = Boolean.valueOf((String)findViewById(R.id.salvar_compartilhar_twitter).getTag());
 		if(shareFace){
 			FacebookUtil.publicarNoMural(SalvarCompartilharActivity.this, 
-					foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
+					foto.getMoldura().getLegenda(), foto.getArquivo(), verificarCompartilharComPolaroid(),REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
 		}
 		if(shareTwitter){
 			//TODO Implementar compartilhar no Twitter
@@ -272,6 +272,13 @@ public class SalvarCompartilharActivity extends Activity {
 			// Compartilhou no face ou twitter, então exibo a mensagem de compartilhando!
 			exibirMensagem(R.string.msg_compartilhando);
 		}
+	}
+	
+	private boolean verificarCompartilharComPolaroid(){
+		if(polaroid.getVisibility() == ImageView.INVISIBLE){
+			return false;
+		}
+		return true;
 	}
 	
 	private LogInCallback configurarCallbackTwitterLogin() {
@@ -428,7 +435,9 @@ public class SalvarCompartilharActivity extends Activity {
 			 */
 			case REAUTH_ACTIVITY_CODE:
 				ParseFacebookUtils.getSession().onActivityResult(this, requestCode, resultCode, data);
-				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
+				FacebookUtil.publicarNoMural(this, foto.getMoldura().getLegenda(), foto.getArquivo(), 
+						verificarCompartilharComPolaroid(),
+						REAUTH_ACTIVITY_CODE, configurarCallbackCompartilharFace());
 				finish();
 				break;
 			case LOGIN_FACEBOOK:
@@ -446,11 +455,40 @@ public class SalvarCompartilharActivity extends Activity {
 		case android.R.id.home:
 			finalizar();
 			break;
-
+		case R.id.menu_salvar_compartilhar_foto:
+			verificarMenu(R.id.menu_salvar_compartilhar_foto);
+			break;
+		case R.id.menu_salvar_compartilhar_polaroid:
+			verificarMenu(R.id.menu_salvar_compartilhar_polaroid);
+			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private void verificarMenu(int resMenu){
+		switch (resMenu) {
+		case R.id.menu_salvar_compartilhar_foto:
+			menu.findItem(resMenu).setVisible(false);
+			menu.findItem(R.id.menu_salvar_compartilhar_polaroid).setVisible(true);
+			polaroid.setVisibility(ImageView.INVISIBLE);
+			break;
+		case R.id.menu_salvar_compartilhar_polaroid:
+			menu.findItem(resMenu).setVisible(false);
+			menu.findItem(R.id.menu_salvar_compartilhar_foto).setVisible(true);
+			polaroid.setVisibility(ImageView.VISIBLE);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_salvar_compartilhar, menu);
+		this.menu = menu;
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override

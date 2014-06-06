@@ -171,6 +171,7 @@ public class HomeActivity extends Activity {
 		ParseQuery<Moldura> pQuery = ParseQuery.getQuery(Moldura.class);
 		pQuery.include("tema");
 		pQuery.include("frase");
+		pQuery.whereEqualTo("tipo", "free");
 		pQuery.setCachePolicy(CachePolicy.NETWORK_ELSE_CACHE);
 		pQuery.findInBackground(configurarCallbackBuscarMolduras());
 	}
